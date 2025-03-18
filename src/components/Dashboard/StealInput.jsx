@@ -61,7 +61,7 @@ function StealInput({ selectedSizes, setSuadaBillNo, setGetSuadaInputData }) {
         {/* Total Quantity & Bill No */}
         <div className="flex flex-col space-y-2">
           <label className="text-gray-700 text-xl mt-2 mb-3 ml-4 font-sans">
-            Total Qty: <span className="font-bold text-md">20 Bag</span>
+            Total Qty1: <span className="font-bold text-md">20 Bag</span>
           </label>
           <InputField
             label="Bill No"
