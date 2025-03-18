@@ -7,8 +7,11 @@ import DateField from "../MUIComponents/DateField";
 import { useSelector } from "react-redux";
 
 function Dashboard() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const brands = useSelector((state) => state.users.brands);
+  const suadas = useSelector((state) => state.users.suadas);
+
+  console.log("suadas = ", suadas);
 
   return (
     <>
@@ -17,7 +20,7 @@ function Dashboard() {
           {/* Filter */}
           <div className="flex items-center space-x-2">
             <label className="text-lg font-medium">Filter:</label>
-            <DropDownField items={brands} title="Brands"/>
+            <DropDownField items={brands} title="Brands" />
           </div>
 
           {/* Datepicker */}
@@ -48,211 +51,40 @@ function Dashboard() {
         </div>
 
         <div className="flex items-center space-x-3 mt-4 ml-6 rounded-lg">
-          <button onClick={() => navigate("/dashboard/addSuada")} className="w-12 h-12 flex items-center justify-center cursor-pointer bg-blue-600 text-white hover:bg-blue-700 rounded-full text-2xl">
+          <button
+            onClick={() => navigate("/dashboard/addSuada")}
+            className="w-12 h-12 flex items-center justify-center cursor-pointer bg-blue-600 text-white hover:bg-blue-700 rounded-full text-2xl"
+          >
             +
           </button>
           <label className="text-gray-800 text-2xl font-semibold">Suada</label>
         </div>
 
         <div className="grid md:grid-cols-3 2xl:grid-cols-5 gap-4">
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Draft"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="In transite"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Complete"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="In transite"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Complete"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Draft"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="In transite"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Draft"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Complete"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Draft"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="In transite"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Draft"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Complete"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="Complete"
-          />
-          <SuadaCard
-            Vname="V name"
-            Sname="S name"
-            VQty="QTY"
-            SQty="QTY"
-            VRate="Rate"
-            SRate="Rate"
-            VBillno="Bill No"
-            SBillno="Bill No"
-            Brand="Brand"
-            Date="20-01-2025"
-            Status="In transite"
-          />
+          {suadas.length > 0 ? (
+            suadas.map((item, index) => (
+              <SuadaCard
+                key={index}
+                Vname={item.vendorName}
+                Sname={item.sellerName}
+                VQty={item.totalQty}
+                SQty={item.totalQty}
+                VRate={item.vendorRate}
+                SRate={item.sellerRate}
+                VBillno={item.billNo}
+                SBillno={item.billNo}
+                Brand={item.brandName}
+                Date={item.date}
+                Status="Draft"
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center text-gray-500 text-lg font-semibold">
+              No Data Found
+            </div>
+          )}
         </div>
       </div>
-
     </>
   );
 }

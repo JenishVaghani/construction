@@ -5,7 +5,7 @@ import DropDownField from "../MUIComponents/DropDownField";
 import MultiSelectDropDownField from "../MUIComponents/MultiSelectDropDownField";
 import StealInput from "./StealInput";
 import CementInput from "./CementInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import DateField from "../MUIComponents/DateField";
 import { addSuadas } from "../Redux/UserSlice";
@@ -21,7 +21,11 @@ function AddSuada() {
   const [suadaBillNo, setSuadaBillNo] = useState("");
   const [suadaSizes, setSuadaSizes] = useState([]);
   const [getSuadaInputData, setGetSuadaInputData] = useState({});
+  const [getSuadaTotalQty, setGetSuadaTotalQty] = useState(0);
+  const [getTotalVendorRate, setGetTotalVendorRate] = useState(0);
+  const [getTotalSellerRate, setGetTotalSellerRate] = useState(0);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const selectedBrand =
     brandsData.find((brand) => brand.name === suadaBrandName) ?? null;
@@ -46,6 +50,9 @@ function AddSuada() {
     date: suadaDate,
     billNo: suadaBillNo,
     type: "suada",
+    totalQty: getSuadaTotalQty,
+    vendorRate: getTotalVendorRate * getSuadaTotalQty,
+    sellerRate: getTotalSellerRate * getSuadaTotalQty,
   };
 
   const handleAddSuada = () => {
@@ -65,19 +72,24 @@ function AddSuada() {
           ["vendorRate", "sellerRate", "qty", "moneyType"].every(
             (field) =>
               getSuadaInputData[size][field] &&
-              Array.isArray(getSuadaInputData[size][field]) &&
-              getSuadaInputData[size][field].length > 0 &&
-              getSuadaInputData[size][field].every(
-                (value) => value?.toString().trim() !== ""
-              )
+              getSuadaInputData[size][field].toString().trim() !== ""
           )
       )
     ) {
-      console.log(storeSuadaData);
+      console.log("storeSuadaData = ", storeSuadaData);
       dispatch(addSuadas(storeSuadaData));
+      navigate("/dashboard");
     } else {
-      console.log("Check Alert = ", {suadaVendorName:suadaVendorName, suadaSellerName:suadaSellerName, suadaBrandName:suadaBrandName, suadaSizes:suadaSizes, suadaDate:suadaDate, suadaBillNo:suadaBillNo, getSuadaInputData:getSuadaInputData});
-      
+      console.log("Check Alert = ", {
+        suadaVendorName,
+        suadaSellerName,
+        suadaBrandName,
+        suadaSizes,
+        suadaDate,
+        suadaBillNo,
+        getSuadaInputData,
+      });
+
       alert("All fields are required!");
     }
   };
@@ -144,13 +156,19 @@ function AddSuada() {
             <StealInput
               selectedSizes={suadaSizes}
               setSuadaBillNo={setSuadaBillNo}
+              setGetSuadaTotalQty={setGetSuadaTotalQty}
               setGetSuadaInputData={setGetSuadaInputData}
+              setGetTotalVendorRate={setGetTotalVendorRate}
+              setGetTotalSellerRate={setGetTotalSellerRate}
             />
           ) : (
             <CementInput
               selectedSizes={suadaSizes}
               setSuadaBillNo={setSuadaBillNo}
+              setGetSuadaTotalQty={setGetSuadaTotalQty}
               setGetSuadaInputData={setGetSuadaInputData}
+              setGetTotalVendorRate={setGetTotalVendorRate}
+              setGetTotalSellerRate={setGetTotalSellerRate}
             />
           )}
         </div>

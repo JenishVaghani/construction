@@ -15,7 +15,7 @@ import AddSeller from "./components/Sellers/AddSeller";
 function App() {
   return (
     <div>
-      <BrowserRouter >
+      <BrowserRouter>
         <Header />
         <Sidebar />
         <Routes>
