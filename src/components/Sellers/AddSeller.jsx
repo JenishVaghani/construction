@@ -13,7 +13,7 @@ function AddSeller() {
     const navigate = useNavigate()
 
     const showAddSellerUrl = [
-        <Link underline="hover" key="1" color="inherit" to="/sellers">
+        <Link underline="hover" key="1" color="inherit" to="/sellers" className='hover:underline'>
             Sellers
         </Link>,
         <Typography key="3" sx={{ color: 'text.primary' }}>
@@ -40,17 +40,15 @@ function AddSeller() {
     }
 
   return (
-    <div className="h-full ml-56 mt-16">
-            <div className="p-2">
-                <h1 className="text-2xl font-bold pt-4 pl-8">Add Seller</h1>
-
-                <div className="mt-6 ml-4 border border-black p-2 w-fit rounded-xl">
+    <div className="min-h-screen ml-56 mt-16 bg-gray-100">
+            <div className="p-4">
+                <div className="w-fit rounded-md bg-gray-300 p-3">
                     <Breadcrumbs separator="›" aria-label="breadcrumb">
                         {showAddSellerUrl}
                     </Breadcrumbs>
                 </div>
 
-                <div className="pl-16 pt-6">
+                <div className="mt-4">
                     <div className="flex items-center mb-4">
                         <InputField label="Name" type="text" onChange={(e) => setSellerName(e.target.value)} />
                     </div>

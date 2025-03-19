@@ -21,7 +21,13 @@ function AddBrand() {
   const brands = BRANDCATEGORYS;
   const sizes = brandCategory === "Cement" ? CEMENTSIZESNAME : STEALSIZESNAME;
   const showAddBrandUrl = [
-    <Link underline="hover" key="1" color="inherit" to="/brands">
+    <Link
+      underline="hover"
+      key="1"
+      color="inherit"
+      to="/brands"
+      className="hover:underline"
+    >
       Brands
     </Link>,
     <Typography key="3" sx={{ color: "text.primary" }}>
@@ -49,17 +55,15 @@ function AddBrand() {
   };
 
   return (
-    <div className="h-full ml-56 mt-16">
-      <div className="p-2">
-        <h1 className="text-2xl font-bold pt-4 pl-8">Add Brand</h1>
-
-        <div className="mt-6 ml-4 border border-black p-2 w-fit rounded-xl">
+    <div className="min-h-screen ml-56 mt-16">
+      <div className="p-4">
+        <div className="w-fit rounded-xl bg-gray-300 p-3">
           <Breadcrumbs separator="›" aria-label="breadcrumb">
             {showAddBrandUrl}
           </Breadcrumbs>
         </div>
 
-        <div className="pl-16 pt-6">
+        <div className="mt-4">
           <div className="flex items-center mb-4">
             <InputField
               label="Name"
@@ -69,6 +73,7 @@ function AddBrand() {
           </div>
           <div className="flex items-center mb-4">
             <DropDownField
+              value={""}
               items={brands}
               title="Category"
               onChange={setBrandCategory}

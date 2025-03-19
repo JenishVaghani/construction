@@ -5,15 +5,24 @@ import DropDownField from "../MUIComponents/DropDownField";
 import MultiSelectDropDownField from "../MUIComponents/MultiSelectDropDownField";
 import StealInput from "./StealInput";
 import CementInput from "./CementInput";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import DateField from "../MUIComponents/DateField";
 import { addSuadas } from "../Redux/UserSlice";
+//UUID
 
 function AddSuada() {
   const vendersData = useSelector((state) => state.users.vendors);
   const sellersData = useSelector((state) => state.users.sellers);
   const brandsData = useSelector((state) => state.users.brands);
+  const suadasData = useSelector((state) => {
+    if (!state || !state.users || !state.users.suadas) {
+      return [];
+    }
+    return state.users.suadas;
+  });
+  const { index } = useParams();
+  const editData = suadasData[index];
   const [suadaVendorName, setSaudaVendorName] = useState("");
   const [suadaSellerName, setSuadaSellerName] = useState("");
   const [suadaBrandName, setSuadaBrandName] = useState("");
@@ -34,7 +43,7 @@ function AddSuada() {
     : [];
 
   const addSuadaPath = [
-    <Link underline="hover" key="1" color="inherit" to="/dashboard">
+    <Link underline="hover" key="1" color="inherit" to="/dashboard" className="hover:underline">
       Dashboard
     </Link>,
     <Typography key="3" sx={{ color: "text.primary" }}>
@@ -95,33 +104,36 @@ function AddSuada() {
   };
 
   return (
-    <div className="h-full ml-56 mt-16">
-      <div className="p-2">
-        <h1 className="text-2xl font-bold pt-4 pl-8">Add Suada</h1>
-
-        <div className="mt-6 ml-4 border border-black p-2 w-fit rounded-xl">
+    <div className="min-h-screen ml-56 mt-16 bg-gray-100">
+      <div className="p-4">
+        <div className="w-fit rounded-md bg-gray-300 p-3">
           <Breadcrumbs separator="›" aria-label="breadcrumb">
             {addSuadaPath}
           </Breadcrumbs>
         </div>
-        <div className="pl-16 pt-6">
+        <div className="mt-4">
           {/* Vendor & Date Row */}
           <div className="flex items-center mb-4">
             <div className="flex items-center">
               <DropDownField
+                value={editData ? editData.vendorName : ""}
                 items={vendersData}
                 title="Vender"
                 onChange={setSaudaVendorName}
               />
             </div>
             <div className="ml-8">
-              <DateField setSuadaDate={setSuadaDate} />
+              <DateField
+                setSuadaDate={setSuadaDate}
+                value={editData ? editData.date : ""}
+              />
             </div>
           </div>
 
           {/* Seller Dropdown */}
           <div className="flex items-center mb-4">
             <DropDownField
+              value={editData ? editData.sellerName : ""}
               items={sellersData}
               title="Seller"
               onChange={setSuadaSellerName}
@@ -131,6 +143,7 @@ function AddSuada() {
           {/* Brand Dropdown */}
           <div className="flex items-center mb-4">
             <DropDownField
+              value={editData ? editData.brandName : ""}
               items={brandsData}
               title="Brand"
               onChange={setSuadaBrandName}
@@ -149,7 +162,7 @@ function AddSuada() {
 
         <div>
           {!selectedBrand ? (
-            <h3 className="pl-12 text-red-500 font-bold">
+            <h3 className="text-red-500 font-bold">
               Please select a brand
             </h3>
           ) : selectedBrand.category === "Steal" ? (

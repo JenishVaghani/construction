@@ -31,7 +31,7 @@ function MultiSelectDropDownField({ items, title, onChange }) {
 
   return (
     <div>
-      <Box sx={{ minWidth: 250 }}>
+      <Box sx={{ minWidth: 250 }} className="bg-white">
         <FormControl fullWidth size="small">
           <InputLabel id="demo-multiple-checkbox-label">{title}</InputLabel>
           <Select
@@ -52,7 +52,7 @@ function MultiSelectDropDownField({ items, title, onChange }) {
             }}
             MenuProps={MenuProps}
             sx={{
-              maxWidth: 250, // મહત્તમ પહોળાઈ નિયંત્રિત કરવા માટે
+              maxWidth: 250,
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",

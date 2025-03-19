@@ -17,7 +17,7 @@ function Sidebar() {
 
   return (
     <>
-      <div className="w-56 bg-[#768c87] h-screen p-4 fixed z-10 top-0">
+      <div className="w-56 bg-[#15616D] h-screen p-4 fixed z-10 top-0">
         {/* Teqnodux Section */}
         <div className="flex items-center mb-6">
           <img
@@ -37,8 +37,8 @@ function Sidebar() {
               key={index}
               onClick={() => navigate(`/${item.name}`)}
               className={`flex items-center space-x-3 p-2 rounded-lg transition cursor-pointer ${location.pathname.startsWith(`/${item.name}`)
-                  ? "bg-[#5f736d]"
-                  : "hover:bg-[#6b807a]"
+                  ? "bg-[#0E4A52]"
+                  : "hover:bg-[#1B7F8A]"
                 }
 `}
             >

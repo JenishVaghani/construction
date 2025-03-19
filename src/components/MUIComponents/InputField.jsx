@@ -8,8 +8,9 @@ function InputField({ label, type, widthStyle, onChange }) {
         label={label}
         type={type}
         size="small"
-        className={`${widthStyle}`}
+        className={`${widthStyle} bg-white`}
         onChange={onChange}
+        sx={{ minWidth: 250 }}
       />
     </div>
   );

@@ -12,10 +12,10 @@ function Brands() {
   const tableHeadingData = BRANDTABLEHEADINGDATA
   
   return (  
-    <div className="h-full ml-56 mt-16">
-          <div className="p-2">
+    <div className="min-h-screen ml-56 mt-16 bg-gray-100">
+          <div className="p-4">
             {/* Flex Container for Add Member & Search */}
-            <div className="flex items-center mt-4 ml-6 rounded-lg space-x-4 w-full">
+            <div className="flex items-center rounded-lg space-x-4 w-full">
               {/* Add Member Button */}
               <div className="flex items-center space-x-3">
                 <button onClick={() => navigate("/brands/addBrand")} className="w-12 h-12 flex items-center justify-center cursor-pointer bg-blue-600 text-white hover:bg-blue-700 rounded-full text-2xl">
@@ -36,7 +36,7 @@ function Brands() {
             </div>
     
             <div className="flex justify-center">
-              <div className="p-4 w-3/4">
+              <div className="pt-4 w-full">
                 <TableField tableHeadingData={tableHeadingData} tableData={tableData} />
               </div>
             </div>

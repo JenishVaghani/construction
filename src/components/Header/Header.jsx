@@ -5,7 +5,7 @@ function Header() {
   const profile = PROFILE;
 
   return (
-    <div className="h-16 bg-[#768c87] text-white flex items-center justify-between px-6 fixed top-0 right-0 left-56 z-10">
+    <div className="h-16 bg-[#15616D]  text-white flex items-center justify-between px-6 fixed top-0 right-0 left-56 z-10">
       {/* Title (Centered) */}
       <h1 className="text-xl font-semibold tracking-wide flex-1 text-center">
         Construction Management

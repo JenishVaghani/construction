@@ -31,6 +31,7 @@ function App() {
           <Route path="/sellers" element={<Sellers />} />
           <Route path="/sellers/addSeller" element={<AddSeller />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/dashboard/edit/:index" element={<AddSuada />} />
         </Routes>
       </BrowserRouter>
     </div>

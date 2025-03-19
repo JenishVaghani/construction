@@ -63,8 +63,8 @@ function CementInput({
 
   return (
     <div>
-      <div className="pl-8">
-        <h1 className="text-xl font-semibold">Qty</h1>
+      <div className="">
+        <h1 className="text-xl font-semibold mt-6 mb-2">Qty</h1>
         {selectedSizes.map((item, index) => (
           <div className="pb-4" key={index}>
             <label className="text-gray-700 ">{item}</label>
@@ -105,7 +105,7 @@ function CementInput({
 
         {/* Total Quantity & Bill No */}
         <div className="flex flex-col space-y-2">
-          <label className="text-gray-700 text-xl mt-2 mb-3 ml-4 font-sans">
+          <label className="text-gray-700 text-xl mt-2 mb-2 font-sans">
             Total Qty:{" "}
             <span className="font-bold text-md">{suadaTotalQty} T</span>
           </label>
