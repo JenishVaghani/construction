@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addVendors } from "../Redux/UserSlice";
 import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 
 function AddVendor() {
   const {
@@ -36,7 +37,10 @@ function AddVendor() {
       vendorEmail: data.vendorEmail,
       vendorPhone: data.vendorPhone,
       type: "vendor",
+      vendorId: uuidv4()
     };
+    console.log("storeVendorData", storeVendorData);
+    
     dispatch(addVendors(storeVendorData));
     navigate("/vendors");
   };

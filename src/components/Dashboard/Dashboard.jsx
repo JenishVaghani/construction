@@ -21,7 +21,7 @@ function Dashboard() {
             {/* Filter */}
             <div className="flex items-center space-x-2">
               <label className="text-lg font-medium">Filter:</label>
-              <DropDownField items={brands} title="Brands" />
+              <DropDownField options={brands} title="Brands" />
             </div>
 
             {/* Datepicker */}

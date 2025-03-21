@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { addBrands } from "../Redux/UserSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 
 function AddBrand() {
   const dispatch = useDispatch();
@@ -28,9 +29,9 @@ function AddBrand() {
   const brandCategory = watch("brandCategory");
 
   const sizes =
-    brandCategory === "Cement"
+    brandCategory === "01b31a99-2422-4ee3-ac6c-a63934aecd53"
       ? CEMENTSIZESNAME
-      : brandCategory === "Steal"
+      : brandCategory === "8b64b5f2-7f1a-4e47-b00a-18ff1126e6fb"
       ? STEALSIZESNAME
       : [];
 
@@ -55,10 +56,15 @@ function AddBrand() {
       brandCategory: data.brandCategory,
       brandSizes: data.brandSizes,
       type: "brand",
+      brandId: uuidv4(),
     };
+    console.log("storeBrandData", storeBrandData);
     dispatch(addBrands(storeBrandData));
     navigate("/brands");
   };
+
+  console.log("0000", (e) => setValue("brandCategory", e));
+  
 
   return (
     <div className="min-h-screen ml-56 mt-16">
@@ -85,7 +91,7 @@ function AddBrand() {
             </div>
             <div className="mb-4">
               <DropDownField
-                items={brands}
+                options={brands}
                 title="Category"
                 {...register("brandCategory", {
                   required: "Category is required",

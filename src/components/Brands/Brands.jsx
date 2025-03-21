@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 function Brands() {
   const navigate = useNavigate()
   const brands = useSelector((state) => state.users.brands)
+  console.log("brands", brands);
   
   const tableData = brands;
   const tableHeadingData = BRANDTABLEHEADINGDATA

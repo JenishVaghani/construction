@@ -6,8 +6,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { BRANDCATEGORYS } from "../../utils/constants";
 
 function TableField({ tableHeadingData, tableData }) {
+
   return (
     <div>
       <TableContainer
@@ -79,7 +81,9 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.brandCategory}
+                        {BRANDCATEGORYS.find(
+                          (brand) => brand.value === item.brandCategory
+                        )?.label || "Unknown"}
                       </TableCell>
                       <TableCell
                         align="center"

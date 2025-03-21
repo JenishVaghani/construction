@@ -15,6 +15,7 @@ function AddSuada() {
   const vendersData = useSelector((state) => state.users.vendors);
   const sellersData = useSelector((state) => state.users.sellers);
   const brandsData = useSelector((state) => state.users.brands);
+  console.log("vendersData", vendersData, "sellersData", sellersData, "brandsData", brandsData);
 
   const methods = useForm();
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ function AddSuada() {
   const suadaSizes = watch("suadaSizes");
 
   const selectedBrand =
-    brandsData.find((brand) => brand.brandName === suadaBrandName) ?? null;
+    brandsData.find((brand) => brand.brandId === suadaBrandName) ?? null;
 
   const sizesData = selectedBrand
     ? selectedBrand.brandSizes.map((size) => ({ name: size, value: size }))
@@ -87,7 +88,10 @@ function AddSuada() {
                 {/* Vendor Dropdown */}
                 <div className="flex flex-col">
                   <DropDownField
-                    items={vendersData.map((e) => ({ name: e.vendorName }))}
+                    options={(vendersData || []).map((e) => ({
+                      label: e.vendorName,
+                      value: e.vendorId,
+                    }))}
                     title="Vendor"
                     {...register("suadaVendorName", {
                       required: "Vendor is required",
@@ -122,8 +126,9 @@ function AddSuada() {
               {/* Seller Dropdown */}
               <div className="mb-4">
                 <DropDownField
-                  items={sellersData.map((e) => ({
-                    name: e.sellerName,
+                  options={(sellersData || []).map((e) => ({
+                    label: e.sellerName,
+                    value: e.sellerId
                   }))}
                   title="Seller"
                   {...register("suadaSellerName", {
@@ -141,8 +146,9 @@ function AddSuada() {
               {/* Brand Dropdown */}
               <div className="mb-4">
                 <DropDownField
-                  items={brandsData.map((e) => ({
-                    name: e.brandName,
+                  options={(brandsData || []).map((e) => ({
+                    label: e.brandName,
+                    value: e.brandId,
                   }))}
                   title="Brand"
                   {...register("suadaBrandName", {

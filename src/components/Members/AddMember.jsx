@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { addMembers } from "../Redux/UserSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 
 function AddMember() {
   const {
@@ -36,6 +37,7 @@ function AddMember() {
       memberEmail: data.memberEmail,
       memberPhone: data.memberPhone,
       type: "member",
+      memberId: uuidv4()
     };
 
     dispatch(addMembers(storeMemberData));

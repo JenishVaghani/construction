@@ -14,8 +14,6 @@ export const PROFILE = { img: Profile, name: "Jenish Vaghani" };
 export const EDIT = { img: Edit, name: "edit" }
 export const SHOW = { img: Show, name: "show" }
 
-
-
 export const SIDEDETAILS = [
   { img: Dashboard, name: "dashboard", title: "Dashboard" },
   { img: Members, name: "members", title: "Members" },
@@ -26,46 +24,21 @@ export const SIDEDETAILS = [
 ];
 
 export const BRANDCATEGORYS = [
-  { name: "Cement", value: "Cement" },
-  { name: "Steal", value: "Steal" },
+  { label: "Cement", value: "01b31a99-2422-4ee3-ac6c-a63934aecd53" },
+  { label: "Steal", value: "8b64b5f2-7f1a-4e47-b00a-18ff1126e6fb" },
 ];
 
-
-export const VENDERS = [
-  { name: "Jenish Vaghani", value: "Jenish Vaghani" },
-  { name: "Avshesh Savani", value: "Avshesh Savani" },
-  { name: "Kaushal Devani", value: "Kaushal Devani" },
-  { name: "Dhruv Lakhani", value: "Dhruv Lakhani" },
-]
-
-export const SELLERS = [
-  { name: "Ganesha Deva", value: "Ganesha Deva" },
-  { name: "Shiva Deva", value: "Shiva Deva" },
-  { name: "Vishnu Deva", value: "Vishnu Deva" },
-  { name: "Krishna Deva", value: "Krishna Deva" },
-]
-
-export const SIZES = [
-  { name: "8 mm", value: "8 mm" },
-  { name: "12 mm", value: "12 mm" },
-  { name: "16 mm", value: "16 mm" },
-  { name: "20 mm", value: "20 mm" },
-  { name: "24 mm", value: "24 mm" },
-  { name: "26 mm", value: "26 mm" },
-  { name: "32 mm", value: "32 mm" },
-]
-
 export const CEMENTSIZESNAME = [
-  {name: "OPC", value: "OPC"},
-  {name: "PPC", value: "PPC"},
-  {name: "Premium", value: "Premium"}
+  {label: "OPC", value: "08ee6ed6-2039-43df-86bf-ed637f48ff8f"},
+  {label: "PPC", value: "53615a1c-8847-4af7-b6fb-0d62d6d5aa11"},
+  {label: "Premium", value: "52b570cc-c439-4b45-b11e-3532c96abd5e"}
 ]
 
 export const STEALSIZESNAME = [
-  {name: "8 mm", value: "8 mm"},
-  {name: "12 mm", value: "12 mm"},
-  {name: "16 mm", value: "16 mm"},
-  {name: "20 mm", value: "20 mm"},
+  {label: "8 mm", value: "548480d4-4960-45cc-84df-4588121efe85"},
+  {label: "12 mm", value: "7c06443e-6c6a-417e-a44e-4f55289cd153"},
+  {label: "16 mm", value: "8bfcb65d-f514-439c-b7d6-98ebad0e1d5b"},
+  {label: "20 mm", value: "d96818a8-9ecd-4459-8738-70bf15f2cd56"},
 ]
 
 export const MEMBERTABLEHEADINGDATA = [

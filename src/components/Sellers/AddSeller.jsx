@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addSellers } from "../Redux/UserSlice";
 import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 
 function AddSeller() {
   const {
@@ -36,8 +37,10 @@ function AddSeller() {
       sellerEmail: data.sellerEmail,
       sellerPhone: data.sellerPhone,
       type: "seller",
+      sellerId: uuidv4()
     };
-
+    console.log("storeSellerData", storeSellerData);
+    
     dispatch(addSellers(storeSellerData));
     navigate("/sellers");
   };
