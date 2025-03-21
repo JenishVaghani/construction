@@ -18,10 +18,12 @@ const MenuProps = {
 };
 
 function MultiSelectDropDownField({ items, title, onChange }) {
+  
   const [sizeName, setSizeName] = useState([]);
 
   const handleChange = (event) => {
     const { value } = event.target;
+
     const selectedValues = typeof value === "string" ? value.split(",") : value;
     setSizeName(selectedValues);
     if (onChange) {
@@ -31,7 +33,7 @@ function MultiSelectDropDownField({ items, title, onChange }) {
 
   return (
     <div>
-      <Box sx={{ minWidth: 250 }} className="bg-white">
+      <Box sx={{ width: 250 }} className="bg-white">
         <FormControl fullWidth size="small">
           <InputLabel id="demo-multiple-checkbox-label">{title}</InputLabel>
           <Select

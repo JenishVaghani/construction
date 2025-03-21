@@ -1,65 +1,13 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
 import InputField from "../MUIComponents/InputField";
 import SwitchButtonField from "../MUIComponents/SwitchButtonField";
+import { useFormContext } from "react-hook-form";
+import { Controller } from "react-hook-form";
 
-function CementInput({
-  selectedSizes,
-  setSuadaBillNo,
-  setGetSuadaInputData,
-  setGetSuadaTotalQty,
-  setGetTotalVendorRate,
-  setGetTotalSellerRate,
-}) {
-  const [suadaSizesInputData, setSuadaSizesData] = useState([]);
-  const [suadaTotalQty, setSuadaTotalQty] = useState(0);
-  const [suadaTotalVendorRate, setSuadaTotalVendorRate] = useState(0);
-  const [suadaTotalSellerRate, setSuadaTotalSellerRate] = useState(0);
-
-  const handleInputchange = (size, field, value) => {
-    setSuadaSizesData((prev) => {
-      const updatedSizes = {
-        ...prev,
-        [size]: { ...prev[size], [field]: value },
-      };
-      // Total qty calculate
-      const totalQty = Object.values(updatedSizes).reduce(
-        (sum, item) => sum + (parseFloat(item.qty) || 0),
-        0
-      );
-
-      const totalVendorRate = Object.values(updatedSizes).reduce(
-        (sum, item) => sum + (parseFloat(item.vendorRate) || 0),
-        0
-      );
-
-      const totalSellerRate = Object.values(updatedSizes).reduce(
-        (sum, item) => sum + (parseFloat(item.sellerRate) || 0),
-        0
-      );
-
-      setSuadaTotalQty(totalQty);
-      setSuadaTotalVendorRate(totalVendorRate);
-      setSuadaTotalSellerRate(totalSellerRate);
-      return updatedSizes;
-    });
-  };
-
-  useEffect(() => {
-    setGetSuadaInputData(suadaSizesInputData);
-  }, [suadaSizesInputData]);
-
-  useEffect(() => {
-    setGetSuadaTotalQty(suadaTotalQty);
-  }, [suadaTotalQty]);
-
-  useEffect(() => {
-    setGetTotalVendorRate(suadaTotalVendorRate);
-  }, [suadaTotalVendorRate]);
-
-  useEffect(() => {
-    setGetTotalSellerRate(suadaTotalSellerRate);
-  }, [suadaTotalSellerRate]);
+function CementInput({ selectedSizes, control }) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
 
   return (
     <div>
@@ -71,34 +19,57 @@ function CementInput({
 
             {/* Input Fields & Switch Row */}
             <div className="flex items-center mt-1 gap-1">
-              <InputField
-                label="Vendor rate"
-                type="number"
-                onChange={(e) =>
-                  handleInputchange(item, "vendorRate", e.target.value)
-                }
-              />
-              <InputField
-                label="Seller rate"
-                type="number"
-                onChange={(e) =>
-                  handleInputchange(item, "sellerRate", e.target.value)
-                }
-              />
-              <InputField
-                label="Qty"
-                type="number"
-                onChange={(e) => handleInputchange(item, "qty", e.target.value)}
-              />
+              <div className=" flex-col">
+                <InputField
+                  label="Vendor rate"
+                  type="number"
+                  {...register(`sizesData.${item}.vendorRate`, {
+                    required: "Vendor rate is required",
+                  })}
+                />
+                {errors.vendorRate && (
+                  <p className="text-red-500">{errors.vendorRate.message}</p>
+                )}
+              </div>
+              <div className=" flex-col">
+                <InputField
+                  label="Seller rate"
+                  type="number"
+                  {...register(`sizesData.${item}.sellerRate`, {
+                    required: "Seller rate is required",
+                  })}
+                />
+                {errors.sellerRate && (
+                  <p className="text-red-500">{errors.sellerRate.message}</p>
+                )}
+              </div>
+              <div className=" flex-col">
+                <InputField
+                  label="Qty"
+                  type="number"
+                  {...register(`sizesData.${item}.qty`, {
+                    required: "Qty is required",
+                  })}
+                />
+                {errors.qty && (
+                  <p className="text-red-500">{errors.qty.message}</p>
+                )}
+              </div>
 
-              <SwitchButtonField
-                name1="W"
-                name2="B"
-                defaultValue="W"
-                onChange={(value) =>
-                  handleInputchange(item, "moneyType", value || "W")
-                }
-              />
+              <div className=" items-center justify-center">
+                <Controller
+                  name={`sizesData.${item}.moneyType`}
+                  control={control}
+                  defaultValue="W"
+                  render={({ field }) => (
+                    <SwitchButtonField
+                      name1="W"
+                      name2="B"
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
             </div>
           </div>
         ))}
@@ -106,15 +77,18 @@ function CementInput({
         {/* Total Quantity & Bill No */}
         <div className="flex flex-col space-y-2">
           <label className="text-gray-700 text-xl mt-2 mb-2 font-sans">
-            Total Qty:{" "}
-            <span className="font-bold text-md">{suadaTotalQty} T</span>
+            Total Qty: <span className="font-bold text-md">20 T</span>
           </label>
           <InputField
             label="Bill No"
             type="text"
-            widthStyle="w-62"
-            onChange={(e) => setSuadaBillNo(e.target.value)}
+            {...register("billNo", {
+              required: "Bill number is required",
+            })}
           />
+          {errors.billNo && (
+            <p className="text-red-500">{errors.billNo.message}</p>
+          )}
         </div>
       </div>
     </div>

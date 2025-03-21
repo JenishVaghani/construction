@@ -52,19 +52,19 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.name}
+                        {item.memberName}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.email}
+                        {item.memberEmail}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.phone}
+                        {item.memberPhone}
                       </TableCell>
                     </>
                   ) : item.type === "brand" ? (
@@ -73,21 +73,21 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.name}
+                        {item.brandName}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.category}
+                        {item.brandCategory}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {Array.isArray(item.size)
-                          ? item.size.join(", ")
-                          : item.size}
+                        {Array.isArray(item.brandSizes)
+                          ? item.brandSizes.join(", ")
+                          : item.brandSizes}
                       </TableCell>
                     </>
                   ) : item.type === "vendor" ? (
@@ -96,19 +96,19 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.name}
+                        {item.vendorName}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.email}
+                        {item.vendorEmail}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.phone}
+                        {item.vendorPhone}
                       </TableCell>
                     </>
                   ) : item.type === "seller" ? (
@@ -117,19 +117,19 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.name}
+                        {item.sellerName}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.email}
+                        {item.sellerEmail}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.phone}
+                        {item.sellerPhone}
                       </TableCell>
                     </>
                   ) : (

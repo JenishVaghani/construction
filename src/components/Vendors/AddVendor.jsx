@@ -1,75 +1,122 @@
-import { Breadcrumbs, Typography } from '@mui/material';
-import React, { useState } from 'react'
-import InputField from '../MUIComponents/InputField';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { addVendors } from '../Redux/UserSlice';
-
+import { Breadcrumbs, Typography } from "@mui/material";
+import React from "react";
+import InputField from "../MUIComponents/InputField";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addVendors } from "../Redux/UserSlice";
+import { useForm } from "react-hook-form";
 
 function AddVendor() {
-    const [vendorName, setVendorName] = useState("")
-    const [vendorEmail, setVendorEmail] = useState("")
-    const [vendorPhone, setVendorPhone] = useState("")
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const showAddVendorUrl = [
-        <Link underline="hover" key="1" color="inherit" to="/vendors" className='hover:underline'>
-            Vendors
-        </Link>,
-        <Typography key="3" sx={{ color: 'text.primary' }}>
-            addVendor
-        </Typography>,
-    ];
+  const showAddVendorUrl = [
+    <Link
+      underline="hover"
+      key="1"
+      color="inherit"
+      to="/vendors"
+      className="hover:underline"
+    >
+      Vendors
+    </Link>,
+    <Typography key="3" sx={{ color: "text.primary" }}>
+      addVendor
+    </Typography>,
+  ];
 
+  const onSubmit = (data) => {
     const storeVendorData = {
-        name: vendorName,
-        email: vendorEmail,
-        phone: vendorPhone,
-        type: "vendor"
-    }
+      vendorName: data.vendorName,
+      vendorEmail: data.vendorEmail,
+      vendorPhone: data.vendorPhone,
+      type: "vendor",
+    };
+    dispatch(addVendors(storeVendorData));
+    navigate("/vendors");
+  };
 
-    const handleAddVendor = () => {
-        if (vendorName && vendorEmail && vendorPhone) {
-            dispatch(addVendors(storeVendorData))
-            setVendorName("")
-            setVendorEmail("")
-            setVendorPhone("")
-            navigate("/vendors")
-        }
-        else {
-            alert("All fields are required!")
-        }
-    }
-
-    return (
-        <div className="min-h-screen ml-56 mt-16">
-            <div className="p-4">
-                <div className="w-fit rounded-md bg-gray-300 p-3">
-                    <Breadcrumbs separator="›" aria-label="breadcrumb">
-                        {showAddVendorUrl}
-                    </Breadcrumbs>
-                </div>
-
-                <div className="mt-4">
-                    <div className="flex items-center mb-4">
-                        <InputField label="Name" type="text" onChange={(e) => setVendorName(e.target.value)} />
-                    </div>
-                    <div className="flex items-center mb-4">
-                        <InputField label="Email" type="text" onChange={(e) => setVendorEmail(e.target.value)} />
-                    </div>
-                    <div className="flex items-center mb-4">
-                        <InputField label="Phone No" type="number" onChange={(e) => setVendorPhone(e.target.value)} />
-                    </div>
-                    <div className="flex items-center mb-4 pl-12">
-                        <button onClick={handleAddVendor} className="px-10 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 cursor-pointer">
-                            Add
-                        </button>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen ml-56 mt-16">
+      <div className="p-4">
+        <div className="w-fit rounded-md bg-gray-300 p-3">
+          <Breadcrumbs separator="›" aria-label="breadcrumb">
+            {showAddVendorUrl}
+          </Breadcrumbs>
         </div>
-    )
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mt-4">
+            <div className="mb-4">
+              <InputField
+                label="Name"
+                type="text"
+                {...register("vendorName", {
+                  required: "Name is required",
+                  minLength: {
+                    value: 3,
+                    message: "Name must be at least 3 characters long",
+                  },
+                })}
+              />
+              {errors.vendorName && (
+                <p className="text-red-500">{errors.vendorName.message}</p>
+              )}
+            </div>
+            <div className="mb-4">
+              <InputField
+                label="Email"
+                type="text"
+                {...register("vendorEmail", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Plese enter valid email",
+                  },
+                })}
+              />
+              {errors.vendorEmail && (
+                <p className="text-red-500">{errors.vendorEmail.message}</p>
+              )}
+            </div>
+            <div className="mb-4">
+              <InputField
+                label="Phone No"
+                type="number"
+                {...register("vendorPhone", {
+                  required: "Phone is required",
+                  minLength: {
+                    value: 10,
+                    message: "Phone number cannot be less than 10 digits",
+                  },
+                  maxLength: {
+                    value: 10,
+                    message: "Phone number cannot be more than 10 digits",
+                  },
+                })}
+              />
+              {errors.vendorPhone && (
+                <p className="text-red-500">{errors.vendorPhone.message}</p>
+              )}
+            </div>
+            <div className="flex items-center mb-4 pl-12">
+              <button
+                type="submit"
+                className="px-10 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 cursor-pointer"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 
-export default AddVendor
+export default AddVendor;

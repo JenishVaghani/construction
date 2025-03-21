@@ -7,6 +7,7 @@ import { MEMBERTABLEHEADINGDATA } from '../../utils/constants';
 
 function Members() {
   const members = useSelector((state) => state.users.members)
+  
   const navigate = useNavigate();
   const tableData = members
   const tableHeadingData = MEMBERTABLEHEADINGDATA

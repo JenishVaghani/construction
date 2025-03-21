@@ -1,19 +1,17 @@
 import React from "react";
 import TextField from "@mui/material/TextField";
 
-function InputField({ label, type, widthStyle, onChange }) {
+const InputField = ({ label, type, ...rest }) => {
   return (
-    <div>
-      <TextField
-        label={label}
-        type={type}
-        size="small"
-        className={`${widthStyle} bg-white`}
-        onChange={onChange}
-        sx={{ minWidth: 250 }}
-      />
-    </div>
+    <TextField
+      label={label}
+      type={type}
+      size="small"
+      className="bg-white"
+      sx={{ width: 250 }}
+      {...rest}
+    />
   );
-}
+};
 
 export default InputField;

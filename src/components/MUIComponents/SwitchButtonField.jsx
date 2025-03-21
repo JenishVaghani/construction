@@ -7,7 +7,7 @@ function SwitchButtonField({ name1, name2, onChange }) {
   const handleSwitchChange = (event) => {
     const isChecked = event.target.checked;
     setChecked(isChecked);
-    onChange(isChecked ? name2 : name1); // Pass "W" or "B" to parent component
+    onChange(isChecked ? name2 : name1); 
   };
 
   return (
