@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -13,21 +13,31 @@ const MenuProps = {
     style: {
       maxHeight: 48 * 4.5 + 8,
       width: 250,
-    },
+    },  
   },
 };
 
-function MultiSelectDropDownField({ items, title, onChange }) {
-  
+function MultiSelectDropDownField({ options, title, onChange, value }) {
   const [sizeName, setSizeName] = useState([]);
+  
+  useEffect(() => {
+    // ✅ Ensure only values are stored
+    const selectedValues = value.map((item) => item.value);
+    setSizeName(selectedValues);
+  }, [value]);
 
   const handleChange = (event) => {
     const { value } = event.target;
-
     const selectedValues = typeof value === "string" ? value.split(",") : value;
-    setSizeName(selectedValues);
+
+    // Store selected object instead of only label or value
+    const selectedObjects = options.filter((item) =>
+      selectedValues.includes(item.value)
+    );
+
+    setSizeName(selectedObjects.map((item) => item.value)); // Store only values
     if (onChange) {
-      onChange(selectedValues);
+      onChange(selectedObjects.map((item) => item.value)); // Pass values to parent
     }
   };
 
@@ -40,17 +50,19 @@ function MultiSelectDropDownField({ items, title, onChange }) {
             labelId="demo-multiple-checkbox-label"
             id="demo-multiple-checkbox"
             multiple
-            value={sizeName}
+            value={sizeName} // Use value array
             onChange={handleChange}
             input={<OutlinedInput label="Tag" />}
             renderValue={(selected) => {
-              const displayText =
-                selected.length > 2
-                  ? `${selected.slice(0, 2).join(", ")}... (${
-                      selected.length - 2
-                    } more)`
-                  : selected.join(", ");
-              return displayText;
+              const selectedLabels = options
+                .filter((item) => selected.includes(item.value))
+                .map((item) => item.label);
+
+              return selectedLabels.length > 2
+                ? `${selectedLabels.slice(0, 2).join(", ")}... (${
+                    selectedLabels.length - 2
+                  } more)`
+                : selectedLabels.join(", ");
             }}
             MenuProps={MenuProps}
             sx={{
@@ -60,10 +72,11 @@ function MultiSelectDropDownField({ items, title, onChange }) {
               whiteSpace: "nowrap",
             }}
           >
-            {items.map((item, index) => (
+            {options.map((item, index) => (
               <MenuItem key={index} value={item.value}>
-                <Checkbox checked={sizeName.includes(item.name)} />
-                <ListItemText primary={item.name} />
+                <Checkbox checked={sizeName.includes(item.value)} />{" "}
+                {/* ✅ Fix */}
+                <ListItemText primary={item.label} />
               </MenuItem>
             ))}
           </Select>

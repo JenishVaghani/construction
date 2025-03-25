@@ -1,21 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Breadcrumbs, Typography } from "@mui/material";
 import InputField from "../MUIComponents/InputField";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addMembers } from "../Redux/UserSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import { updateMember } from "../Redux/UserSlice";
 
 function AddMember() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      memberName: "",
+      memberEmail: "",
+      memberPhone: "",
+    },
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
 
+  const members = useSelector((state) => state.users.members);
+
+  const memberToEdit = isEditMode
+    ? members.find((member) => member.id === id)
+    : null;
+
+  useEffect(() => {
+    if (isEditMode && memberToEdit) {
+      setValue("memberName", memberToEdit.name);
+      setValue("memberEmail", memberToEdit.email);
+      setValue("memberPhone", memberToEdit.phone);
+    }
+  }, [isEditMode, memberToEdit, setValue]);
   const showAddMemberUrl = [
     <Link
       underline="hover"
@@ -27,20 +50,25 @@ function AddMember() {
       Members
     </Link>,
     <Typography key="3" sx={{ color: "text.primary" }}>
-      addMember
+      {isEditMode ? "Edit Member" : "Add Member"}
     </Typography>,
   ];
 
   const onSubmit = (data) => {
     const storeMemberData = {
-      memberName: data.memberName,
-      memberEmail: data.memberEmail,
-      memberPhone: data.memberPhone,
+      id: isEditMode ? id : uuidv4(),
       type: "member",
-      memberId: uuidv4()
+      name: data.memberName,
+      email: data.memberEmail,
+      phone: data.memberPhone,
     };
+    console.log("storeMemberData = ", storeMemberData);
 
-    dispatch(addMembers(storeMemberData));
+    if (isEditMode) {
+      dispatch(updateMember(storeMemberData));
+    } else {
+      dispatch(addMembers(storeMemberData));
+    }
     navigate("/members");
   };
 
@@ -99,8 +127,8 @@ function AddMember() {
                   },
                   maxLength: {
                     value: 10,
-                    message: "Phone number cannot be more than 10 digits"
-                  }
+                    message: "Phone number cannot be more than 10 digits",
+                  },
                 })}
               />
               {errors.memberPhone && (
@@ -110,9 +138,9 @@ function AddMember() {
             <div className="flex items-center mb-4 pl-12">
               <button
                 type="submit"
-                className="px-10 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 cursor-pointer"
+                className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
               >
-                Add
+                {isEditMode ? "Update" : "Add"}
               </button>
             </div>
           </div>

@@ -10,8 +10,13 @@ function Dashboard() {
   const navigate = useNavigate();
   const brands = useSelector((state) => state.users.brands);
   const suadas = useSelector((state) => state.users.suadas);
-
-  console.log("suadas = ", suadas);
+  const brandOptions = Array.isArray(brands)
+    ? brands.map((brand) => ({
+        label: brand.name, 
+        value: brand.id,
+      }))
+    : [];
+  
 
   return (
     <>
@@ -21,7 +26,7 @@ function Dashboard() {
             {/* Filter */}
             <div className="flex items-center space-x-2">
               <label className="text-lg font-medium">Filter:</label>
-              <DropDownField options={brands} title="Brands" />
+              <DropDownField options={brandOptions} title="Brands" />
             </div>
 
             {/* Datepicker */}
@@ -31,7 +36,7 @@ function Dashboard() {
 
             {/* Search - Takes Full Width in Between */}
             <div className="flex-grow flex items-center space-x-1">
-              <label className="flex items-center border border-gray-300 px-3 py-2 bg-white rounded-lg w-full focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 hover:border-gray-800">
+              <label className="flex items-center border border-gray-300 px-3 py-2 bg-white rounded-lg w-2/3 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 hover:border-gray-800">
                 <FaSearch className="text-gray-500 mr-1 text-sm" />
                 <input
                   type="text"
@@ -46,7 +51,7 @@ function Dashboard() {
             </div>
 
             {/* Download PDF Button - Stays on the Right */}
-            <button className="bg-blue-600 text-white px-3 py-2 ml-4 text-sm rounded-md hover:bg-blue-700 cursor-pointer">
+            <button className="bg-[#15616D] text-white px-3 py-2 ml-4 text-sm rounded-md hover:bg-[#0E4A52] cursor-pointer">
               Download PDF
             </button>
           </div>
@@ -54,7 +59,7 @@ function Dashboard() {
           <div className="flex items-center space-x-3 mt-4 rounded-lg">
             <button
               onClick={() => navigate("/dashboard/addSuada")}
-              className="w-12 h-12 flex items-center justify-center cursor-pointer bg-blue-600 text-white hover:bg-blue-700 rounded-full text-2xl"
+              className="w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl"
             >
               +
             </button>
@@ -68,16 +73,14 @@ function Dashboard() {
               suadas.map((item, index) => (
                 <SuadaCard
                   key={index}
-                  index={index}
-                  Vname={item.vendorName}
-                  Sname={item.sellerName}
-                  VQty={item.totalQty}
-                  SQty={item.totalQty}
-                  VRate={item.vendorRate}
-                  SRate={item.sellerRate}
-                  VBillno={item.billNo}
-                  SBillno={item.billNo}
-                  Brand={item.brandName}
+                  id={item.id}
+                  Vname={item.vendorName.label}
+                  Sname={item.sellerName.label}
+                  TotalQty={item.totalQty}
+                  TotalVRate={item.totalVendorRate}
+                  TotalSRate={item.totalSellerRate}
+                  Billno={item.billNo}
+                  Brand={item.brandName.label}
                   Date={item.date}
                   Status="Draft"
                 />

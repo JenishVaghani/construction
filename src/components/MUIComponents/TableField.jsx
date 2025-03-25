@@ -7,9 +7,49 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { BRANDCATEGORYS } from "../../utils/constants";
+import { EDIT } from "../../utils/constants";
+import { DELETE } from "../../utils/constants";
+import { useNavigate } from "react-router-dom";
+import {
+  deleteMember,
+  deleteBrand,
+  deleteVendor,
+  deleteSeller,
+} from "../Redux/UserSlice";
+import { useDispatch } from "react-redux";
 
 function TableField({ tableHeadingData, tableData }) {
+  let colSpan = tableHeadingData.length + 1;
 
+  const edit = EDIT;
+  const deleted = DELETE;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleEdit = (item) => {
+
+    if (item.type === "member") {
+      navigate(`/members/edit/${item.id}`);
+    } else if (item.type === "brand") {
+      navigate(`/brands/edit/${item.id}`);
+    } else if (item.type === "vendor") {
+      navigate(`/vendors/edit/${item.id}`);
+    } else if (item.type === "seller") {
+      navigate(`/sellers/edit/${item.id}`);
+    }
+  };
+
+  const handleDelete = (item) => {
+    if (item.type === "member") {
+      dispatch(deleteMember(item.id));
+    } else if (item.type === "brand") {
+      dispatch(deleteBrand(item.id));
+    } else if (item.type === "vendor") {
+      dispatch(deleteVendor(item.id));
+    } else if (item.type === "seller") {
+      dispatch(deleteSeller(item.id));
+    }
+  };
   return (
     <div>
       <TableContainer
@@ -54,19 +94,35 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.memberName}
+                        {item.name}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.memberEmail}
+                        {item.email}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.memberPhone}
+                        {item.phone}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-center space-x-6">
+                          <img
+                            src={edit.img}
+                            alt={edit.name}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleEdit(item)}
+                          />
+                          <img
+                            src={deleted.img}
+                            alt={deleted.name}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleDelete(item)}
+                          />
+                        </div>
                       </TableCell>
                     </>
                   ) : item.type === "brand" ? (
@@ -75,23 +131,37 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.brandName}
+                        {item.name}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {BRANDCATEGORYS.find(
-                          (brand) => brand.value === item.brandCategory
-                        )?.label || "Unknown"}
+                        {item.category.label}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {Array.isArray(item.brandSizes)
-                          ? item.brandSizes.join(", ")
-                          : item.brandSizes}
+                        {Array.isArray(item.sizes)
+                          ? item.sizes.map((size) => size.label).join(", ")
+                          : item.sizes?.label}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-center space-x-6">
+                          <img
+                            src={edit.img}
+                            alt={edit.name}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleEdit(item)}
+                          />
+                          <img
+                            src={deleted.img}
+                            alt={deleted.name}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleDelete(item)}
+                          />
+                        </div>
                       </TableCell>
                     </>
                   ) : item.type === "vendor" ? (
@@ -100,19 +170,35 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.vendorName}
+                        {item.name}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.vendorEmail}
+                        {item.email}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.vendorPhone}
+                        {item.phone}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-center space-x-6">
+                          <img
+                            src={edit.img}
+                            alt={edit.name}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleEdit(item)}
+                          />
+                          <img
+                            src={deleted.img}
+                            alt={deleted.name}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleDelete(item)}
+                          />
+                        </div>
                       </TableCell>
                     </>
                   ) : item.type === "seller" ? (
@@ -121,19 +207,35 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.sellerName}
+                        {item.name}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.sellerEmail}
+                        {item.email}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.sellerPhone}
+                        {item.phone}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-center space-x-6">
+                          <img
+                            src={edit.img}
+                            alt={edit.name}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleEdit(item)}
+                          />
+                          <img
+                            src={deleted.img}
+                            alt={deleted.name}
+                            className="w-6 h-6 cursor-pointer"
+                            onClick={() => handleDelete(item)}
+                          />
+                        </div>
                       </TableCell>
                     </>
                   ) : (
@@ -144,7 +246,7 @@ function TableField({ tableHeadingData, tableData }) {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={colSpan}
                   align="center"
                   className="border border-gray-300 text-red-500 font-bold italic"
                 >

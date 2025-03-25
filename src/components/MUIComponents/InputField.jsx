@@ -9,6 +9,7 @@ const InputField = ({ label, type, ...rest }) => {
       size="small"
       className="bg-white"
       sx={{ width: 250 }}
+      
       {...rest}
     />
   );

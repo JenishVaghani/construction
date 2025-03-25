@@ -1,9 +1,9 @@
 import { Breadcrumbs, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import InputField from "../MUIComponents/InputField";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addVendors } from "../Redux/UserSlice";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addVendors, updateVendor } from "../Redux/UserSlice";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
@@ -11,10 +11,33 @@ function AddVendor() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      vendorName: "",
+      vendorEmail: "",
+      vendorPhone: "",
+    },
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
+
+  const vendors = useSelector((state) => state.users.vendors);
+
+  const vendorToEdit = isEditMode
+    ? vendors.find((vendor) => vendor.id === id)
+    : null;
+
+  useEffect(() => {
+    if (isEditMode && vendorToEdit) {
+      setValue("vendorName", vendorToEdit.name);
+      setValue("vendorEmail", vendorToEdit.email);
+      setValue("vendorPhone", vendorToEdit.phone);
+    }
+  }, [isEditMode, vendorToEdit, setValue]);
 
   const showAddVendorUrl = [
     <Link
@@ -27,21 +50,24 @@ function AddVendor() {
       Vendors
     </Link>,
     <Typography key="3" sx={{ color: "text.primary" }}>
-      addVendor
+      {isEditMode ? "Edit Vendor" : "Add Vendor"}
     </Typography>,
   ];
 
   const onSubmit = (data) => {
     const storeVendorData = {
-      vendorName: data.vendorName,
-      vendorEmail: data.vendorEmail,
-      vendorPhone: data.vendorPhone,
+      id: isEditMode ? id : uuidv4(),
       type: "vendor",
-      vendorId: uuidv4()
+      name: data.vendorName,
+      email: data.vendorEmail,
+      phone: data.vendorPhone,
     };
-    console.log("storeVendorData", storeVendorData);
-    
-    dispatch(addVendors(storeVendorData));
+
+    if (isEditMode) {
+      dispatch(updateVendor(storeVendorData));
+    } else {
+      dispatch(addVendors(storeVendorData));
+    }
     navigate("/vendors");
   };
 
@@ -111,9 +137,9 @@ function AddVendor() {
             <div className="flex items-center mb-4 pl-12">
               <button
                 type="submit"
-                className="px-10 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 cursor-pointer"
+                className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
               >
-                Add
+                {isEditMode ? "Update" : "Add"}
               </button>
             </div>
           </div>

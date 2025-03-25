@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 function Brands() {
   const navigate = useNavigate()
   const brands = useSelector((state) => state.users.brands)
-  console.log("brands", brands);
   
   const tableData = brands;
   const tableHeadingData = BRANDTABLEHEADINGDATA
@@ -20,7 +19,7 @@ function Brands() {
             <div className="flex items-center rounded-lg space-x-4 w-full">
               {/* Add Member Button */}
               <div className="flex items-center space-x-3">
-                <button onClick={() => navigate("/brands/addBrand")} className="w-12 h-12 flex items-center justify-center cursor-pointer bg-blue-600 text-white hover:bg-blue-700 rounded-full text-2xl">
+                <button onClick={() => navigate("/brands/addBrand")} className="w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl">
                   +
                 </button>
                 <label className="text-gray-800 text-2xl font-semibold">Add Brand</label>

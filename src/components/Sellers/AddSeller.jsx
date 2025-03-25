@@ -1,9 +1,9 @@
 import { Breadcrumbs, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import InputField from "../MUIComponents/InputField";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { addSellers } from "../Redux/UserSlice";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addSellers, updateSeller } from "../Redux/UserSlice";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 
@@ -11,10 +11,33 @@ function AddSeller() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      sellerName: "",
+      sellerEmail: "",
+      sellerPhone: "",
+    },
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
+
+  const sellers = useSelector((state) => state.users.sellers);
+
+  const sellerToEdit = isEditMode
+    ? sellers.find((seller) => seller.id === id)
+    : null;
+
+  useEffect(() => {
+    if (isEditMode && sellerToEdit) {
+      setValue("sellerName", sellerToEdit.name);
+      setValue("sellerEmail", sellerToEdit.email);
+      setValue("sellerPhone", sellerToEdit.phone);
+    }
+  }, [isEditMode, sellerToEdit, setValue]);
 
   const showAddSellerUrl = [
     <Link
@@ -27,21 +50,25 @@ function AddSeller() {
       Sellers
     </Link>,
     <Typography key="3" sx={{ color: "text.primary" }}>
-      addSeller
+      {isEditMode ? "Edit Seller" : "Add Seller"}
     </Typography>,
   ];
 
   const onSubmit = (data) => {
     const storeSellerData = {
-      sellerName: data.sellerName,
-      sellerEmail: data.sellerEmail,
-      sellerPhone: data.sellerPhone,
+      id: isEditMode ? id : uuidv4(),
       type: "seller",
-      sellerId: uuidv4()
+      name: data.sellerName,
+      email: data.sellerEmail,
+      phone: data.sellerPhone,
     };
-    console.log("storeSellerData", storeSellerData);
-    
-    dispatch(addSellers(storeSellerData));
+
+    if (isEditMode) {
+      dispatch(updateSeller(storeSellerData));
+    } else {
+      dispatch(addSellers(storeSellerData));
+    }
+
     navigate("/sellers");
   };
 
@@ -111,9 +138,9 @@ function AddSeller() {
             <div className="flex items-center mb-4 pl-12">
               <button
                 type="submit"
-                className="px-10 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 cursor-pointer"
+                className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
               >
-                Add
+                {isEditMode ? "Update" : "Add"}
               </button>
             </div>
           </div>

@@ -13,11 +13,11 @@ function Members() {
   const tableHeadingData = MEMBERTABLEHEADINGDATA
   return (
     <div className="min-h-screen ml-56 mt-16 bg-gray-100">
-      <div className="p-4">
+      <div className="p-4"> 
         <div className="flex items-center rounded-lg space-x-4 w-full">
           {/* Add Member Button */}
           <div className="flex items-center space-x-3">
-            <button onClick={() => navigate("/members/addMember")} className="w-12 h-12 flex items-center justify-center cursor-pointer bg-blue-600 text-white hover:bg-blue-700 rounded-full text-2xl">
+            <button onClick={() => navigate("/members/addMember")} className="w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl">
               +
             </button>
             <label className="text-gray-800 text-2xl font-semibold">Add Member</label>

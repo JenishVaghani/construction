@@ -4,15 +4,16 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import FormHelperText from "@mui/material/FormHelperText";
 
-function DropDownField({ options, title, onChange, value }) {
+function DropDownField({ items, title, onChange, value, error, helperText }) {
   const [selectedValue, setSelectedValue] = useState("");
 
   useEffect(() => {
-    if(value) {
-      setSelectedValue(value)
+    if (value) {
+      setSelectedValue(value);
     }
-  }, [value])
+  }, [value]);
 
   const handleChange = (e) => {
     setSelectedValue(e.target.value);
@@ -22,16 +23,17 @@ function DropDownField({ options, title, onChange, value }) {
   };
 
   return (
-    <Box sx={{ width: 250 }} className="bg-white">
-      <FormControl fullWidth size="small">
+    <Box sx={{ minWidth: 250 }} className="bg-white">
+      <FormControl fullWidth size="small" error={error}>
         <InputLabel>{title}</InputLabel>
-        <Select label={title} onChange={handleChange} value={selectedValue}>
-          {options.map((item, index) => (
-            <MenuItem key={index} value={item.value}>
-              {item.label}
+        <Select label={title} value={selectedValue} onChange={handleChange}>
+          {items.map((item, index) => (
+            <MenuItem key={index} value={item.name}>
+              {item.name}
             </MenuItem>
           ))}
         </Select>
+        {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormControl>
     </Box>
   );

@@ -36,11 +36,11 @@ function Sidebar() {
             <div
               key={index}
               onClick={() => navigate(`/${item.name}`)}
-              className={`flex items-center space-x-3 p-2 rounded-lg transition cursor-pointer ${location.pathname.startsWith(`/${item.name}`)
+              className={`flex items-center space-x-3 p-2 rounded-lg transition cursor-pointer ${
+                location.pathname.startsWith(`/${item.name}`)
                   ? "bg-[#0E4A52]"
                   : "hover:bg-[#1B7F8A]"
-                }
-`}
+              }`}
             >
               <img
                 src={item.img}

@@ -1,23 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Typography from "@mui/material/Typography";
 import DropDownField from "../MUIComponents/DropDownField";
 import MultiSelectDropDownField from "../MUIComponents/MultiSelectDropDownField";
 import StealInput from "./StealInput";
 import CementInput from "./CementInput";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import DateField from "../MUIComponents/DateField";
 import { useForm, FormProvider, Controller } from "react-hook-form";
-import { addSuadas } from "../Redux/UserSlice";
+import { addSuadas, updateSuada } from "../Redux/UserSlice";
+import { v4 as uuidv4 } from "uuid";
 
 function AddSuada() {
-  const vendersData = useSelector((state) => state.users.vendors);
-  const sellersData = useSelector((state) => state.users.sellers);
-  const brandsData = useSelector((state) => state.users.brands);
-  console.log("vendersData", vendersData, "sellersData", sellersData, "brandsData", brandsData);
-
-  const methods = useForm();
+  const methods = useForm({
+    defaultValues: {
+      suadaVendorName: [],
+      suadaDate: "",
+      suadaSellerName: [],
+      suadaBrandName: [],
+      suadaSizes: [],
+      vendorRate: 0,
+      sellerRate: [],
+      qty: [],
+      totalQty: 0,
+      totalVendorRate: 0,
+      totalSellerRate: 0,
+      billNo: "",
+    },
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -31,15 +42,44 @@ function AddSuada() {
     formState: { errors },
   } = methods;
 
-  const suadaBrandName = watch("suadaBrandName");
-  const suadaSizes = watch("suadaSizes");
+  const vendorsData = useSelector((state) => state.users.vendors);
+  const sellersData = useSelector((state) => state.users.sellers);
+  const brandsData = useSelector((state) => state.users.brands);
 
-  const selectedBrand =
-    brandsData.find((brand) => brand.brandId === suadaBrandName) ?? null;
+  const { id } = useParams();
+  const isEditMode = !!id;
+  const suadas = useSelector((state) => state.users.suadas);
+  const suadaToEdit = isEditMode ? suadas.find((suada) => suada.id === id ) : null
 
-  const sizesData = selectedBrand
-    ? selectedBrand.brandSizes.map((size) => ({ name: size, value: size }))
-    : [];
+  useEffect(() => {
+    if (isEditMode && suadaToEdit) {
+      setValue("suadaVendorName", suadaToEdit.vendorName);
+      setValue("suadaDate", suadaToEdit.date);
+      setValue("suadaSellerName", suadaToEdit.sellerName);
+      setValue("suadaBrandName", suadaToEdit.brandName);
+      setValue(
+        "suadaSizes",
+        suadaToEdit.sizes.value.map((s) => s)
+      );
+
+      setValue("billNo", suadaToEdit.billNo);
+      if (suadaToEdit.sizesData) {
+        const categoryName = suadaToEdit.sizes.name.map((s) => s);
+        const categoryObj = suadaToEdit.sizesData;
+
+        categoryName.forEach((size) => {
+          const vendorRate = categoryObj[size]?.vendorRate || 0;
+          const sellerRate = categoryObj[size]?.sellerRate || 0;
+          const qty = categoryObj[size]?.qty || 0;
+          const moneyType = categoryObj[size]?.moneyType || 0;
+          setValue(`sizesData.${size}.vendorRate`, vendorRate)
+          setValue(`sizesData.${size}.sellerRate`, sellerRate)
+          setValue(`sizesData.${size}.qty`, qty)
+          setValue(`sizesData.${size}.moneyType`, moneyType)
+        });
+      }
+    }
+  }, [isEditMode, suadaToEdit, setValue]);
 
   const addSuadaPath = [
     <Link
@@ -52,23 +92,95 @@ function AddSuada() {
       Dashboard
     </Link>,
     <Typography key="3" sx={{ color: "text.primary" }}>
-      AddSuada
+      {isEditMode ? "Edit Suada" : "Add Suada"}
     </Typography>,
   ];
 
+  const suadaBrandName = watch("suadaBrandName");
+
+  const selectedBrand =
+    brandsData.find((brand) => brand.id === suadaBrandName.value) ?? null;
+
+  const suadaSizes = watch("suadaSizes") || [];
+
+  const sizesData = (selectedBrand?.sizes ?? []).map((size) => ({
+    label: size.label,
+    value: size.value,
+  }));
+
+  const selectedSizes = sizesData.filter(
+    (size) => (watch("suadaSizes") || []).includes(size.value) // ✅ Directly check in array
+  );
+
+  const [inputData, setInputData] = useState({
+    vendorRate: 0,
+    sellerRate: 0,
+    totalQty: 0,
+    totalVendorRate: 0,
+    totalSellerRate: 0,
+  });
+
+  const handleInputDataChange = (updatedData) => {
+    setInputData(updatedData);
+  };
+
+  const handleVendorSelect = (e) => {
+    const selectedVendor = vendorsData.find((vendor) => vendor.id === e);
+    if (selectedVendor) {
+      setValue("suadaVendorName", {
+        label: selectedVendor.name,
+        value: selectedVendor.id,
+      });
+    }
+  };
+
+  const handleSellerSelect = (e) => {
+    const selectedSeller = sellersData.find((seller) => seller.id === e);
+    if (selectedSeller) {
+      setValue("suadaSellerName", {
+        label: selectedSeller.name,
+        value: selectedSeller.id,
+      });
+    }
+  };
+
+  const handleBrandSelect = (e) => {
+    const selectedBrands = brandsData.find((brand) => brand.id === e);
+    if (selectedBrands) {
+      setValue("suadaBrandName", {
+        label: selectedBrands.name,
+        value: selectedBrands.id,
+      });
+    }
+  };
+
   const onsubmit = (data) => {
+    const sizes = (selectedBrand?.sizes || [])
+      .filter((s) => (suadaSizes || []).includes(s.value))
+      .map((s) => s.label);
+
     const storeSuadaData = {
+      id: isEditMode ? id : uuidv4(),
       vendorName: data.suadaVendorName,
       sellerName: data.suadaSellerName,
       brandName: data.suadaBrandName,
       date: getValues("suadaDate"),
-      sizes: data.suadaSizes,
+      sizes: { name: sizes, value: data.suadaSizes },
       sizesData: data.sizesData,
       billNo: data.billNo,
+      vendorRate: inputData.vendorRate,
+      sellerRate: inputData.sellerRate,
+      totalQty: inputData.totalQty,
+      totalVendorRate: inputData.totalVendorRate,
+      totalSellerRate: inputData.totalSellerRate,
     };
-    console.log(storeSuadaData, "storeSuadaData");
 
-    dispatch(addSuadas(storeSuadaData));
+    if (isEditMode) {
+      dispatch(updateSuada(storeSuadaData));
+      
+    } else {
+      dispatch(addSuadas(storeSuadaData));      
+    }
     navigate("/dashboard");
   };
 
@@ -88,15 +200,16 @@ function AddSuada() {
                 {/* Vendor Dropdown */}
                 <div className="flex flex-col">
                   <DropDownField
-                    options={(vendersData || []).map((e) => ({
-                      label: e.vendorName,
-                      value: e.vendorId,
+                    options={(vendorsData || []).map((e) => ({
+                      label: e.name,
+                      value: e.id,
                     }))}
+                    value={watch("suadaVendorName")?.value || ""}
                     title="Vendor"
                     {...register("suadaVendorName", {
                       required: "Vendor is required",
                     })}
-                    onChange={(e) => setValue("suadaVendorName", e)}
+                    onChange={handleVendorSelect}
                   />
                   {errors.suadaVendorName && (
                     <p className="text-red-500">
@@ -112,7 +225,10 @@ function AddSuada() {
                     control={control}
                     rules={{ required: "Date is required" }}
                     render={({ field }) => (
-                      <DateField suadaDate={field.onChange} />
+                      <DateField
+                        suadaDate={field.onChange}
+                        value={watch("suadaDate")}
+                      />
                     )}
                   />
                   {errors.suadaDate && (
@@ -127,14 +243,15 @@ function AddSuada() {
               <div className="mb-4">
                 <DropDownField
                   options={(sellersData || []).map((e) => ({
-                    label: e.sellerName,
-                    value: e.sellerId
+                    label: e.name,
+                    value: e.id,
                   }))}
+                  value={watch("suadaSellerName")?.value || ""}
                   title="Seller"
                   {...register("suadaSellerName", {
                     required: "Seller is required",
                   })}
-                  onChange={(e) => setValue("suadaSellerName", e)}
+                  onChange={handleSellerSelect}
                 />
                 {errors.suadaSellerName && (
                   <p className="text-red-500">
@@ -146,15 +263,16 @@ function AddSuada() {
               {/* Brand Dropdown */}
               <div className="mb-4">
                 <DropDownField
-                  options={(brandsData || []).map((e) => ({
-                    label: e.brandName,
-                    value: e.brandId,
+                  options={brandsData.map((e) => ({
+                    label: e.name,
+                    value: e.id,
                   }))}
+                  value={watch("suadaBrandName")?.value || ""}
                   title="Brand"
                   {...register("suadaBrandName", {
                     required: "Brand is required",
                   })}
-                  onChange={(e) => setValue("suadaBrandName", e)}
+                  onChange={handleBrandSelect}
                 />
                 {errors.suadaBrandName && (
                   <p className="text-red-500">
@@ -166,8 +284,9 @@ function AddSuada() {
               {/* Size Dropdown */}
               <div className="mb-4">
                 <MultiSelectDropDownField
-                  items={sizesData}
+                  options={sizesData}
                   title="Size"
+                  value={selectedSizes}
                   {...register("suadaSizes", {
                     required: "Size is required",
                   })}
@@ -180,16 +299,18 @@ function AddSuada() {
             </div>
 
             <div>
-              {selectedBrand && suadaSizes ? (
-                selectedBrand.brandCategory === "Steal" ? (
+              {selectedBrand && selectedSizes.length > 0 ? (
+                selectedBrand.category === "Steal" ? (
                   <StealInput
-                    selectedSizes={watch("suadaSizes")}
+                    selectedSizes={selectedSizes}
                     control={control}
+                    getStealInputData={handleInputDataChange}
                   />
                 ) : (
                   <CementInput
-                    selectedSizes={watch("suadaSizes")}
+                    selectedSizes={selectedSizes}
                     control={control}
+                    getCementInputData={handleInputDataChange}
                   />
                 )
               ) : (
@@ -203,9 +324,9 @@ function AddSuada() {
             <div className="flex justify-center mt-4">
               <button
                 type="submit"
-                className="px-10 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 cursor-pointer"
+                className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
               >
-                Save
+                {isEditMode ? "Update" : "Save"}
               </button>
             </div>
           </form>

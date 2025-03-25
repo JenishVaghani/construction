@@ -3,15 +3,13 @@ import { EDIT, SHOW } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
 
 function SuadaCard({
-  index,
+  id,
   Vname,
   Sname,
-  VQty,
-  SQty,
-  VRate,
-  SRate,
-  VBillno,
-  SBillno,
+  TotalQty,
+  TotalVRate,
+  TotalSRate,
+  Billno,
   Brand,
   Date,
   Status,
@@ -21,13 +19,13 @@ function SuadaCard({
   const show = SHOW;
 
   const handleEditClick = () => {
-    navigate(`/dashboard/edit/${index}`)
+    navigate(`/dashboard/edit/${id}`)    
   }
 
   return (
     <div className="w-64 border rounded-lg p-4 shadow-lg relative bg-white mt-4">
       {/* Edit Icon */}
-      <div className="absolute -top-5 right-2 bg-gray-300 p-2 rounded-full shadow-md cursor-pointer">
+      <div className="absolute -top-5 right-2 bg-gray-300 hover:bg-[#C8C8C8] p-2 rounded-full shadow-md cursor-pointer">
         <img
           src={Status === "Complete" ? show.img : edit.img}
           alt={Status === "Complete" ? show.name : edit.name}
@@ -41,18 +39,18 @@ function SuadaCard({
         <div className="text-center w-1/2">
           <h1 className="text-sm">{Vname}</h1>
           <div className="text-xs mt-4">
-            <p>{VQty}</p>
-            <p className="font-bold text-lg">{VRate}</p>
-            <p>{VBillno}</p>
+            <p>{TotalQty}</p>
+            <p className="font-bold text-lg">{TotalVRate}</p>
+            <p>{Billno}</p>
           </div>
         </div>
         <div className="h-24 w-px bg-gray-400"></div> {/* Vertical Divider */}
         <div className="text-center w-1/2">
           <h1 className="text-sm">{Sname}</h1>
           <div className="text-xs mt-4">
-            <p>{SQty}</p>
-            <p className="font-bold text-lg">{SRate}</p>
-            <p>{SBillno}</p>
+            <p>{TotalQty}</p>
+            <p className="font-bold text-lg">{TotalSRate}</p>
+            <p>{Billno}</p>
           </div>
         </div>
       </div>
