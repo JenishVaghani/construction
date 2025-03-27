@@ -13,13 +13,13 @@ const MenuProps = {
     style: {
       maxHeight: 48 * 4.5 + 8,
       width: 250,
-    },  
+    },
   },
 };
 
 function MultiSelectDropDownField({ options, title, onChange, value }) {
   const [sizeName, setSizeName] = useState([]);
-  
+
   useEffect(() => {
     // ✅ Ensure only values are stored
     const selectedValues = value.map((item) => item.value);
@@ -43,14 +43,14 @@ function MultiSelectDropDownField({ options, title, onChange, value }) {
 
   return (
     <div>
-      <Box sx={{ width: 250 }} className="bg-white">
+      <Box className="bg-white w-62">
         <FormControl fullWidth size="small">
           <InputLabel id="demo-multiple-checkbox-label">{title}</InputLabel>
           <Select
             labelId="demo-multiple-checkbox-label"
             id="demo-multiple-checkbox"
             multiple
-            value={sizeName} // Use value array
+            value={sizeName}
             onChange={handleChange}
             input={<OutlinedInput label="Tag" />}
             renderValue={(selected) => {
@@ -66,7 +66,6 @@ function MultiSelectDropDownField({ options, title, onChange, value }) {
             }}
             MenuProps={MenuProps}
             sx={{
-              maxWidth: 250,
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",

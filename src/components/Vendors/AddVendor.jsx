@@ -72,7 +72,7 @@ function AddVendor() {
   };
 
   return (
-    <div className="min-h-screen ml-56 mt-16">
+    <div className="min-h-screen">
       <div className="p-4">
         <div className="w-fit rounded-md bg-gray-300 p-3">
           <Breadcrumbs separator="›" aria-label="breadcrumb">

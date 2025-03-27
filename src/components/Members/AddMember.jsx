@@ -73,7 +73,7 @@ function AddMember() {
   };
 
   return (
-    <div className="min-h-screen ml-56 mt-16 bg-gray-100">
+    <div className="min-h-screen bg-gray-100">
       <div className="p-4">
         <div className="w-fit rounded-md bg-gray-300 p-3">
           <Breadcrumbs separator="›" aria-label="breadcrumb">
@@ -135,10 +135,10 @@ function AddMember() {
                 <p className="text-red-500">{errors.memberPhone.message}</p>
               )}
             </div>
-            <div className="flex items-center mb-4 pl-12">
+            <div className="flex justify-center mb-4">
               <button
                 type="submit"
-                className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
+                className="px-12 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
               >
                 {isEditMode ? "Update" : "Add"}
               </button>

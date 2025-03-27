@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Stack, Switch, Typography } from "@mui/material";
 
-function SwitchButtonField({ name1, name2, onChange }) {
-  const [checked, setChecked] = useState(false);
+function SwitchButtonField({ name1, name2, onChange, value }) {
+  const [checked, setChecked] = useState(value === name2);
+
+  useEffect(() => {
+    setChecked(value === name2);
+  }, [value, name2]);
 
   const handleSwitchChange = (event) => {
     const isChecked = event.target.checked;
     setChecked(isChecked);
-    onChange(isChecked ? name2 : name1); 
+    onChange(isChecked ? name2 : name1);
   };
 
   return (

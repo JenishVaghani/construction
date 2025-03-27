@@ -14,16 +14,16 @@ function SuadaCard({
   Date,
   Status,
 }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const edit = EDIT;
   const show = SHOW;
 
   const handleEditClick = () => {
-    navigate(`/dashboard/edit/${id}`)    
-  }
+    navigate(`/dashboard/edit/${id}`);
+  };
 
   return (
-    <div className="w-64 border rounded-lg p-4 shadow-lg relative bg-white mt-4">
+    <div className="w-72 border rounded-lg p-4 shadow-lg relative bg-white mt-4 mx-auto">
       {/* Edit Icon */}
       <div className="absolute -top-5 right-2 bg-gray-300 hover:bg-[#C8C8C8] p-2 rounded-full shadow-md cursor-pointer">
         <img
@@ -34,44 +34,50 @@ function SuadaCard({
         />
       </div>
 
-      {/* V Name & S Name Section */}
-      <div className="flex justify-between items-center text-gray-600 font-medium">
-        <div className="text-center w-1/2">
-          <h1 className="text-sm">{Vname}</h1>
-          <div className="text-xs mt-4">
-            <p>{TotalQty}</p>
-            <p className="font-bold text-lg">{TotalVRate}</p>
-            <p>{Billno}</p>
-          </div>
+      {/* Table Format */}
+      <div className="text-gray-700 font-medium text-sm">
+        <div className="grid grid-cols-3 gap-1 border-b pb-1 text-center font-semibold">
+          <p></p>
+          <p className="border-r border-gray-400">V</p>
+          <p>S</p>
         </div>
-        <div className="h-24 w-px bg-gray-400"></div> {/* Vertical Divider */}
-        <div className="text-center w-1/2">
-          <h1 className="text-sm">{Sname}</h1>
-          <div className="text-xs mt-4">
-            <p>{TotalQty}</p>
-            <p className="font-bold text-lg">{TotalSRate}</p>
-            <p>{Billno}</p>
+        <div className="grid grid-cols-3 gap-1 py-1 text-left">
+          <p className="font-semibold">Name :</p>
+          <div className="border-r border-gray-400">{Vname}</div>
+          <p>{Sname}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-1 py-1 text-left">
+          <p className="font-semibold">Qty :</p>
+          <div className="border-r border-gray-400">{TotalQty}</div>
+          <p>{TotalQty}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-1 py-1 text-left">
+          <p className="font-semibold">Rate :</p>
+          <div className="border-r border-gray-400 font-bold text-lg">
+            {TotalVRate}
           </div>
+          <p className="font-bold text-lg">{TotalSRate}</p>
         </div>
       </div>
 
-      {/* Brand & Date Section */}
-      <div className="text-center mt-3">
-        <p className="text-sm font-semibold">{Brand}</p>
-
-        <p className="text-sm text-gray-600">
-          <span className="font-medium">Date :</span> {Date}
-        </p>
+      {/* Category & Other Info */}
+      <div className="text-center mt-2 border-t pt-1">
+        <p className="text-sm font-semibold uppercase">{Brand}</p>
+      </div>
+      <div className="text-center mt-1 text-sm">
+        <span className="font-medium">Bill No :</span> {Billno}
+      </div>
+      <div className="text-center mt-1 text-sm text-gray-600">
+        <span className="font-medium">Date :</span> {Date}
       </div>
 
-      {/* Draft Button */}
-      <div className="mt-3">
+      {/* Status Button */}
+      <div className="mt-2">
         <button
-          className={`w-full text-black py-2 rounded-md shadow-md font-medium cursor-pointer
-            ${Status === "Draft" ? "bg-yellow-500 hover:bg-yellow-600" : ""}
-            ${Status === "In transite" ? "bg-red-500 hover:bg-red-600" : ""}
-            ${Status === "Complete" ? "bg-green-500 hover:bg-green-600" : ""}
-          `}
+          className={`w-full text-white py-2 rounded-md shadow-md font-medium cursor-pointer
+          ${Status === "Draft" ? "bg-yellow-500 hover:bg-yellow-600" : ""}
+          ${Status === "In transite" ? "bg-red-500 hover:bg-red-600" : ""}
+          ${Status === "Complete" ? "bg-green-500 hover:bg-green-600" : ""}`}
         >
           {Status}
         </button>

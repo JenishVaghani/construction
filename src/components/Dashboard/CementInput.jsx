@@ -8,11 +8,31 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
   const {
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useFormContext();
 
-  // Calculate totals
   const sizesData = watch("sizesData") || {};
+
+  // Edit in direct remove size so update calculate
+  useEffect(() => {
+    const newSizesData = {};
+
+    selectedSizes.forEach((size) => {
+      newSizesData[size.label] = sizesData[size.label] || {
+        qty: "",
+        vendorRate:"",
+        sellerRate: "",
+      };
+    });
+
+    if (JSON.stringify(newSizesData) !== JSON.stringify(sizesData)) {
+      setValue("sizesData", newSizesData);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSizes]);
+
   const vendorRate = Object.values(sizesData).reduce(
     (acc, size) => acc + (Number(size.vendorRate) || 0),
     0
@@ -27,8 +47,6 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
   );
   const totalVendorRate = vendorRate * totalQty;
   const totalSellerRate = sellerRate * totalQty;
-
-  
 
   useEffect(() => {
     const newData = {
@@ -67,7 +85,7 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
             <label className="text-gray-700 ">{item.label}</label>
 
             {/* Input Fields & Switch Row */}
-            <div className="flex items-center mt-1 gap-1">
+            <div className="items-center mt-1 gap-1 flex-wrap sm:flex-wrap lg:flex space-y-3 lg:space-y-0">
               <div className="flex-col">
                 <InputField
                   label="Vendor rate"
@@ -80,12 +98,14 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
                       e.target.value = "";
                     }
                   }}
-                  />
-                  {errors.sizesData?.[item.label]?.vendorRate && (
-                    <p className="text-red-500">{errors.sizesData[item.label].vendorRate.message}</p>
-                  )}
+                />
+                {errors.sizesData?.[item.label]?.vendorRate && (
+                  <p className="text-red-500">
+                    {errors.sizesData[item.label].vendorRate.message}
+                  </p>
+                )}
               </div>
-              <div className=" flex-col">
+              <div className="flex-col">
                 <InputField
                   label="Seller rate"
                   type="number"
@@ -99,10 +119,12 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
                   }}
                 />
                 {errors.sizesData?.[item.label]?.sellerRate && (
-                    <p className="text-red-500">{errors.sizesData[item.label].sellerRate.message}</p>
-                  )}
+                  <p className="text-red-500">
+                    {errors.sizesData[item.label].sellerRate.message}
+                  </p>
+                )}
               </div>
-              <div className=" flex-col">
+              <div className="flex-col">
                 <InputField
                   label="Qty"
                   type="number"
@@ -116,8 +138,10 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
                   }}
                 />
                 {errors.sizesData?.[item.label]?.qty && (
-                    <p className="text-red-500">{errors.sizesData[item.label].qty.message}</p>
-                  )}
+                  <p className="text-red-500">
+                    {errors.sizesData[item.label].qty.message}
+                  </p>
+                )}
               </div>
 
               <div className=" items-center justify-center">
@@ -129,6 +153,7 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
                     <SwitchButtonField
                       name1="W"
                       name2="B"
+                      value={field.value}
                       onChange={field.onChange}
                     />
                   )}

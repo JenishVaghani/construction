@@ -73,7 +73,7 @@ function AddSeller() {
   };
 
   return (
-    <div className="min-h-screen ml-56 mt-16 bg-gray-100">
+    <div className="min-h-screen bg-gray-100">
       <div className="p-4">
         <div className="w-fit rounded-md bg-gray-300 p-3">
           <Breadcrumbs separator="›" aria-label="breadcrumb">

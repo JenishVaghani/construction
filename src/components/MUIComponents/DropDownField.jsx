@@ -9,10 +9,10 @@ function DropDownField({ options, title, onChange, value }) {
   const [selectedValue, setSelectedValue] = useState("");
 
   useEffect(() => {
-    if(value) {
-      setSelectedValue(value)
+    if (value) {
+      setSelectedValue(value);
     }
-  }, [value])
+  }, [value]);
 
   const handleChange = (e) => {
     setSelectedValue(e.target.value);
@@ -22,18 +22,20 @@ function DropDownField({ options, title, onChange, value }) {
   };
 
   return (
-    <Box sx={{ width: 250 }} className="bg-white">
-      <FormControl fullWidth size="small">
-        <InputLabel>{title}</InputLabel>
-        <Select label={title} onChange={handleChange} value={selectedValue}>
-          {options.map((item, index) => (
-            <MenuItem key={index} value={item.value}>
-              {item.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </Box>
+    <div>
+      <Box className="bg-white w-62">
+        <FormControl fullWidth size="small">
+          <InputLabel>{title}</InputLabel>
+          <Select label={title} onChange={handleChange} value={selectedValue}>
+            {options.map((item, index) => (
+              <MenuItem key={index} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+    </div>
   );
 }
 

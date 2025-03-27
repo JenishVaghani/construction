@@ -27,7 +27,6 @@ function TableField({ tableHeadingData, tableData }) {
   const dispatch = useDispatch();
 
   const handleEdit = (item) => {
-
     if (item.type === "member") {
       navigate(`/members/edit/${item.id}`);
     } else if (item.type === "brand") {
@@ -109,7 +108,7 @@ function TableField({ tableHeadingData, tableData }) {
                         {item.phone}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center justify-center space-x-6">
+                        <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
                           <img
                             src={edit.img}
                             alt={edit.name}
@@ -148,7 +147,7 @@ function TableField({ tableHeadingData, tableData }) {
                           : item.sizes?.label}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center justify-center space-x-6">
+                        <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
                           <img
                             src={edit.img}
                             alt={edit.name}
@@ -185,7 +184,7 @@ function TableField({ tableHeadingData, tableData }) {
                         {item.phone}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center justify-center space-x-6">
+                        <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
                           <img
                             src={edit.img}
                             alt={edit.name}
@@ -222,7 +221,7 @@ function TableField({ tableHeadingData, tableData }) {
                         {item.phone}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center justify-center space-x-6">
+                        <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
                           <img
                             src={edit.img}
                             alt={edit.name}

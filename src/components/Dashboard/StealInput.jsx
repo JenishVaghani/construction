@@ -8,11 +8,32 @@ function StealInput({ selectedSizes, control, getStealInputData }) {
   const {
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useFormContext();
 
   // Calculate totals
   const sizesData = watch("sizesData") || {};
+
+  // Edit in direct remove size so update calculate
+  useEffect(() => {
+    const newSizesData = {};
+
+    selectedSizes.forEach((size) => {
+      newSizesData[size.label] = sizesData[size.label] || {
+        qty: 0,
+        vendorRate: 0,
+        sellerRate: 0,
+      };
+    });
+
+    if (JSON.stringify(newSizesData) !== JSON.stringify(sizesData)) {
+      setValue("sizesData", newSizesData);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSizes]);
+
   const vendorRate = Object.values(sizesData).reduce(
     (acc, size) => acc + (Number(size.vendorRate) || 0),
     0

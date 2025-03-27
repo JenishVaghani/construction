@@ -49,7 +49,9 @@ function AddSuada() {
   const { id } = useParams();
   const isEditMode = !!id;
   const suadas = useSelector((state) => state.users.suadas);
-  const suadaToEdit = isEditMode ? suadas.find((suada) => suada.id === id ) : null
+  const suadaToEdit = isEditMode
+    ? suadas.find((suada) => suada.id === id)
+    : null;
 
   useEffect(() => {
     if (isEditMode && suadaToEdit) {
@@ -72,10 +74,10 @@ function AddSuada() {
           const sellerRate = categoryObj[size]?.sellerRate || 0;
           const qty = categoryObj[size]?.qty || 0;
           const moneyType = categoryObj[size]?.moneyType || 0;
-          setValue(`sizesData.${size}.vendorRate`, vendorRate)
-          setValue(`sizesData.${size}.sellerRate`, sellerRate)
-          setValue(`sizesData.${size}.qty`, qty)
-          setValue(`sizesData.${size}.moneyType`, moneyType)
+          setValue(`sizesData.${size}.vendorRate`, vendorRate);
+          setValue(`sizesData.${size}.sellerRate`, sellerRate);
+          setValue(`sizesData.${size}.qty`, qty);
+          setValue(`sizesData.${size}.moneyType`, moneyType);
         });
       }
     }
@@ -108,9 +110,11 @@ function AddSuada() {
     value: size.value,
   }));
 
-  const selectedSizes = sizesData.filter(
-    (size) => (watch("suadaSizes") || []).includes(size.value) // ✅ Directly check in array
+  const selectedSizes = sizesData.filter((size) =>
+    (watch("suadaSizes") || []).includes(size.value)
   );
+
+
 
   const [inputData, setInputData] = useState({
     vendorRate: 0,
@@ -177,15 +181,14 @@ function AddSuada() {
 
     if (isEditMode) {
       dispatch(updateSuada(storeSuadaData));
-      
     } else {
-      dispatch(addSuadas(storeSuadaData));      
+      dispatch(addSuadas(storeSuadaData));
     }
     navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen ml-56 mt-16 bg-gray-100">
+    <div className="min-h-screen bg-gray-100">
       <div className="p-4">
         <div className="w-fit rounded-md bg-gray-300 p-3">
           <Breadcrumbs separator="›" aria-label="breadcrumb">
@@ -196,7 +199,7 @@ function AddSuada() {
           <form onSubmit={handleSubmit(onsubmit)}>
             <div className="mt-4">
               {/* Vendor & Date Row */}
-              <div className="flex items-start mb-4 gap-8">
+              <div className="flex-wrap sm:flex md:flex items-start mb-4 gap-3">
                 {/* Vendor Dropdown */}
                 <div className="flex flex-col">
                   <DropDownField
@@ -219,7 +222,7 @@ function AddSuada() {
                 </div>
 
                 {/* Date Field */}
-                <div className="flex flex-col">
+                <div className="flex flex-col mt-4 sm:mt-0 ">
                   <Controller
                     name="suadaDate"
                     control={control}

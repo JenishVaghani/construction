@@ -9,12 +9,18 @@ import Edit from "./images/edit.png";
 import Show from "./images/show.png";
 import Vendors from "./images/vendors.png";
 import Delete from "./images/delete.png";
+import ListOpen from "./images/listOpen.png";
+import Filter from "./images/filter.png";
+import Download from "./images/download.png"
 
 export const TEQNODUX = { img: Teqnodux, name: "teqnodux" };
 export const PROFILE = { img: Profile, name: "Jenish Vaghani" };
 export const EDIT = { img: Edit, name: "edit" };
 export const SHOW = { img: Show, name: "show" };
 export const DELETE = { img: Delete, name: "Delete" };
+export const LISTOPEN = { img: ListOpen, name: "List Open" };
+export const FILTER = { img: Filter, name: "Filter" };
+export const DOWNLOAD = {img: Download, name: "Download"}
 
 export const SIDEDETAILS = [
   { img: Dashboard, name: "dashboard", title: "Dashboard" },
