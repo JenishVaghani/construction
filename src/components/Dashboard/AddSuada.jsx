@@ -114,8 +114,6 @@ function AddSuada() {
     (watch("suadaSizes") || []).includes(size.value)
   );
 
-
-
   const [inputData, setInputData] = useState({
     vendorRate: 0,
     sellerRate: 0,
@@ -229,7 +227,8 @@ function AddSuada() {
                     rules={{ required: "Date is required" }}
                     render={({ field }) => (
                       <DateField
-                        suadaDate={field.onChange}
+                        label="Date"
+                        date={field.onChange}
                         value={watch("suadaDate")}
                       />
                     )}

@@ -7,6 +7,8 @@ import Select from "@mui/material/Select";
 
 function DropDownField({ options, title, onChange, value }) {
   const [selectedValue, setSelectedValue] = useState("");
+  console.log("options", options);
+  
 
   useEffect(() => {
     if (value) {

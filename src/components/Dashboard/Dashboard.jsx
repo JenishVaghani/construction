@@ -6,21 +6,34 @@ import DropDownField from "../MUIComponents/DropDownField";
 import DateField from "../MUIComponents/DateField";
 import { useSelector } from "react-redux";
 import { FILTER, DOWNLOAD } from "../../utils/constants";
+import { Controller, useForm } from "react-hook-form";
 
 function Dashboard({ isSidebarOpen }) {
+  const brands = useSelector((state) => state.users.brands);
+  const brandOptions = [
+    { label: "All", value: "all" }, // Default option
+    ...brands.map((brand) => ({
+      label: brand.name,
+      value: brand.id,
+    })),
+  ];
+
+  const { register, control, getValues, watch, setValue } = useForm({
+    defaultValues: {
+      brandFilter: "all",
+      startDate: null,
+      endDate: null,
+    },
+  });
+
+  console.log("check filter", watch("brandFilter"));
+  
   const navigate = useNavigate();
   const filter = FILTER;
   const download = DOWNLOAD;
-  const brands = useSelector((state) => state.users.brands);
   const suadas = useSelector((state) => state.users.suadas);
-  const brandOptions = Array.isArray(brands)
-    ? brands.map((brand) => ({
-        label: brand.name,
-        value: brand.id,
-      }))
-    : [];
   const [isFilterModal, setIsFilterModal] = useState(false);
-      
+
   useEffect(() => {
     if (isFilterModal) {
       setIsFilterModal(false);
@@ -28,6 +41,35 @@ function Dashboard({ isSidebarOpen }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSidebarOpen]);
 
+  // Filter logic
+  const filteredSuadas = suadas.filter((item) => {
+    const startDate = getValues("startDate");
+    const endDate = getValues("endDate");
+    const itemDate = item.date;
+    // console.log("startDate:", startDate);
+    // console.log("endDate:", endDate);
+    // console.log("itemDate:", itemDate);
+
+    const isWithinDateRange =
+      !startDate || !endDate || (itemDate >= startDate && itemDate <= endDate);
+
+    const isMatchingBrand =
+    
+    watch("brandFilter") === "all" ||
+      item.brandName.value === watch("brandFilter");
+
+    return isMatchingBrand && isWithinDateRange;
+  });
+
+  // Handle Apply Filter
+  const handleApplyFilter = () => {
+    const mobileInStartDate = getValues("startDate");
+    const mobileInEndDate = getValues("endDate");
+    console.log("mobileInStartDate", mobileInStartDate);
+    console.log("mobileInEndDate", mobileInEndDate);
+
+    setIsFilterModal(false); // Close modal
+  };
   return (
     <>
       <div className="min-h-screen bg-gray-100">
@@ -37,12 +79,39 @@ function Dashboard({ isSidebarOpen }) {
               {/* Filter */}
               <div className="flex items-center space-x-2">
                 <label className="text-lg font-medium">Filter:</label>
-                <DropDownField options={brandOptions} title="Brands" />
+                <DropDownField
+                  options={brandOptions}
+                  title="Brands"
+                  value={watch("brandFilter")}
+                  {...register("brandFilter")}
+                  onChange={(e) => setValue("brandFilter", e)}
+                />
               </div>
 
               {/* Datepicker */}
-              <div>
-                <DateField />
+              <div className="flex space-x-2">
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ field }) => (
+                    <DateField
+                      label="Start-Date"
+                      date={field.onChange}
+                      value={watch("startDate")}
+                    />
+                  )}
+                />
+                <Controller
+                  name="endDate"
+                  control={control}
+                  render={({ field }) => (
+                    <DateField
+                      label="End-Date"
+                      date={field.onChange}
+                      value={watch("endDate")}
+                    />
+                  )}
+                />
               </div>
 
               {/* Search - Takes Full Width in Between */}
@@ -85,10 +154,38 @@ function Dashboard({ isSidebarOpen }) {
             {isFilterModal && (
               <div className="fixed inset-0 top-16 bg-gray-100 z-50 flex flex-col p-4 space-y-4 overflow-auto">
                 {/* Dropdown */}
-                <DropDownField options={brandOptions} title="Brands" />
+                <DropDownField
+                  options={brandOptions}
+                  title="Brands"
+                  value={watch("brandFilter")}
+                  {...register("brandFilter")}
+                  onChange={(e) => setValue("brandFilter", e)}
+                />
 
                 {/* Date Picker */}
-                <DateField />
+                <Controller
+                  name="startDate"
+                  control={control}
+                  render={({ field }) => (
+                    <DateField
+                      label="Start-Date"
+                      date={field.onChange}
+                      value={watch("startDate")}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="endDate"
+                  control={control}
+                  render={({ field }) => (
+                    <DateField
+                      label="End-Date"
+                      date={field.onChange}
+                      value={watch("endDate")}
+                    />
+                  )}
+                />
 
                 {/* Search Field */}
                 <div className="flex flex-col space-y-2">
@@ -108,7 +205,11 @@ function Dashboard({ isSidebarOpen }) {
                   >
                     Cancel
                   </button>
-                  <button className="w-full sm:w-62 bg-[#15616D] text-white px-4 py-2 rounded-md hover:bg-[#0E4A52] cursor-pointer">
+                  <button
+                    type="submit"
+                    onClick={handleApplyFilter}
+                    className="w-full sm:w-62 bg-[#15616D] text-white px-4 py-2 rounded-md hover:bg-[#0E4A52] cursor-pointer"
+                  >
                     Apply
                   </button>
                 </div>
@@ -130,8 +231,8 @@ function Dashboard({ isSidebarOpen }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-            {suadas.length > 0 ? (
-              suadas.map((item, index) => (
+            {filteredSuadas.length > 0 ? (
+              filteredSuadas.map((item, index) => (
                 <SuadaCard
                   key={index}
                   id={item.id}
