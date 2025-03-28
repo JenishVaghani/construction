@@ -15,6 +15,7 @@ function Dashboard({ isSidebarOpen }) {
     ...brands.map((brand) => ({
       label: brand.name,
       value: brand.id,
+      search: ""
     })),
   ];
 
@@ -43,22 +44,26 @@ function Dashboard({ isSidebarOpen }) {
 
   // Filter logic
   const filteredSuadas = suadas.filter((item) => {
+    const selectedBrand = watch("brandFilter");
     const startDate = getValues("startDate");
     const endDate = getValues("endDate");
     const itemDate = item.date;
-    // console.log("startDate:", startDate);
-    // console.log("endDate:", endDate);
-    // console.log("itemDate:", itemDate);
-
+    const searchQuery = watch("search")?.toLowerCase() || "";
     const isWithinDateRange =
       !startDate || !endDate || (itemDate >= startDate && itemDate <= endDate);
 
     const isMatchingBrand =
     
-    watch("brandFilter") === "all" ||
+    selectedBrand === "all" ||
       item.brandName.value === watch("brandFilter");
 
-    return isMatchingBrand && isWithinDateRange;
+      const isMatchingSearch =
+      searchQuery === "" ||
+      item.vendorName.label.toLowerCase().includes(searchQuery) ||
+      item.sellerName.label.toLowerCase().includes(searchQuery) ||
+      item.billNo.toLowerCase().includes(searchQuery);
+
+    return isMatchingBrand && isWithinDateRange && isMatchingSearch;
   });
 
   // Handle Apply Filter
@@ -69,7 +74,7 @@ function Dashboard({ isSidebarOpen }) {
     console.log("mobileInEndDate", mobileInEndDate);
 
     setIsFilterModal(false); // Close modal
-  };
+  };  
   return (
     <>
       <div className="min-h-screen bg-gray-100">
@@ -121,6 +126,7 @@ function Dashboard({ isSidebarOpen }) {
                   <input
                     type="text"
                     placeholder="Search..."
+                    {...register("search")}
                     className="w-full outline-none text-sm text-gray-700 focus:ring-0"
                   />
                 </label>
@@ -194,6 +200,7 @@ function Dashboard({ isSidebarOpen }) {
                     <input
                       type="text"
                       placeholder="Search..."
+                      {...register("search")}
                       className=" outline-none text-sm text-gray-700 focus:ring-0"
                     />
                   </label>
