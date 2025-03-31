@@ -1,7 +1,7 @@
 import React from "react";
 import TextField from "@mui/material/TextField";
 
-const InputField = ({ label, type, ...rest }) => {
+const InputField = ({ label, type, isReadOnly, ...rest }) => {
   return (
     <div className="">
       <TextField
@@ -9,6 +9,7 @@ const InputField = ({ label, type, ...rest }) => {
         type={type}
         size="small"
         className="bg-white w-62"
+        disabled={isReadOnly}
         {...rest}
       />
     </div>

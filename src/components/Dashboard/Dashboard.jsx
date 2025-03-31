@@ -7,6 +7,8 @@ import DateField from "../MUIComponents/DateField";
 import { useSelector } from "react-redux";
 import { FILTER, DOWNLOAD } from "../../utils/constants";
 import { Controller, useForm } from "react-hook-form";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 function Dashboard({ isSidebarOpen }) {
   const brands = useSelector((state) => state.users.brands);
@@ -15,7 +17,7 @@ function Dashboard({ isSidebarOpen }) {
     ...brands.map((brand) => ({
       label: brand.name,
       value: brand.id,
-      search: ""
+      search: "",
     })),
   ];
 
@@ -27,8 +29,6 @@ function Dashboard({ isSidebarOpen }) {
     },
   });
 
-  console.log("check filter", watch("brandFilter"));
-  
   const navigate = useNavigate();
   const filter = FILTER;
   const download = DOWNLOAD;
@@ -53,11 +53,9 @@ function Dashboard({ isSidebarOpen }) {
       !startDate || !endDate || (itemDate >= startDate && itemDate <= endDate);
 
     const isMatchingBrand =
-    
-    selectedBrand === "all" ||
-      item.brandName.value === watch("brandFilter");
+      selectedBrand === "all" || item.brandName.value === watch("brandFilter");
 
-      const isMatchingSearch =
+    const isMatchingSearch =
       searchQuery === "" ||
       item.vendorName.label.toLowerCase().includes(searchQuery) ||
       item.sellerName.label.toLowerCase().includes(searchQuery) ||
@@ -68,19 +66,100 @@ function Dashboard({ isSidebarOpen }) {
 
   // Handle Apply Filter
   const handleApplyFilter = () => {
-    const mobileInStartDate = getValues("startDate");
-    const mobileInEndDate = getValues("endDate");
-    console.log("mobileInStartDate", mobileInStartDate);
-    console.log("mobileInEndDate", mobileInEndDate);
+    setIsFilterModal(false);
+  };
 
-    setIsFilterModal(false); // Close modal
-  };  
+  const handleCancleFilter = () => {
+    setValue("brandFilter", "all");
+    setValue("startDate", null);
+    setValue("endDate", null);
+    setIsFilterModal(false);
+  };
+
+  const handleDownloadPDF = () => {
+    if (filteredSuadas.length === 0) {
+      alert("No data available for download!");
+      return;
+    }
+
+    const doc = new jsPDF({
+      orientation: "landscape", // લૅન્ડસ્કેપ મોડ માટે
+      unit: "mm",
+      format: "a4",
+    });
+    doc.text("Jenish Vaghani(Suada Report)", 10, 12);
+
+    const tableColumn = [
+      "Index",
+      "ID",
+      "Vendor Name",
+      "Seller Name",
+      "Total Qty",
+      "Vendor Rate",
+      "Seller Rate",
+      "Bill No",
+      "Brand",
+      "Date",
+      "Status",
+    ];
+
+    const tableRows = [];
+    filteredSuadas.forEach((item, index) => {
+      const rowData = [
+        index + 1,
+        item.id,
+        item.vendorName.label,
+        item.sellerName.label,
+        item.totalQty,
+        item.totalVendorRate,
+        item.totalSellerRate,
+        item.billNo,
+        item.brandName.label,
+        item.date,
+        item.status,
+      ];
+      tableRows.push(rowData);
+    });
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      theme: "grid",
+      margin: { top: 10, left: 5, right: 5, bottom: 10 }, // Reduce margins
+      styles: {
+        fontSize: 8, // Reduce font size
+        cellPadding: 2,
+        overflow: "linebreak",
+      },
+      headStyles: {
+        fillColor: [21, 97, 109],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+      },
+      columnStyles: {
+        0: { cellWidth: 15 },
+        1: { cellWidth: 25 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 20 },
+        5: { cellWidth: 20 },
+        6: { cellWidth: 25 },
+        7: { cellWidth: 20 },
+        8: { cellWidth: 20 },
+        9: { cellWidth: "wrap" }, // Auto-wrap text
+        10: { cellWidth: "wrap" },
+      },
+    });
+
+    doc.save("Suada_Report.pdf");
+  };
   return (
     <>
       <div className="min-h-screen bg-gray-100">
         <div className="p-4 ">
           <div className="hidden lg:block">
-            <div className="flex items-center gap-2">
+            <div className="flex lg:flex-wrap items-center gap-2">
               {/* Filter */}
               <div className="flex items-center space-x-2">
                 <label className="text-lg font-medium">Filter:</label>
@@ -90,6 +169,7 @@ function Dashboard({ isSidebarOpen }) {
                   value={watch("brandFilter")}
                   {...register("brandFilter")}
                   onChange={(e) => setValue("brandFilter", e)}
+                  myStyle="lg:w-56"
                 />
               </div>
 
@@ -103,6 +183,7 @@ function Dashboard({ isSidebarOpen }) {
                       label="Start-Date"
                       date={field.onChange}
                       value={watch("startDate")}
+                      myStyle="lg:w-56"
                     />
                   )}
                 />
@@ -114,6 +195,7 @@ function Dashboard({ isSidebarOpen }) {
                       label="End-Date"
                       date={field.onChange}
                       value={watch("endDate")}
+                      myStyle="lg:w-56"
                     />
                   )}
                 />
@@ -121,7 +203,7 @@ function Dashboard({ isSidebarOpen }) {
 
               {/* Search - Takes Full Width in Between */}
               <div className="flex-grow flex items-center space-x-2 ">
-                <label className="flex items-center border border-gray-300 px-3 py-2 bg-white rounded-lg w-52 lg:w-42 2xl:w-52 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 hover:border-gray-800">
+                <label className="flex items-center border border-gray-300 px-3 py-2 bg-white rounded-lg w-52 lg:w-40 2xl:w-52 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 hover:border-gray-800">
                   <FaSearch className="text-gray-500 mr-1 text-sm" />
                   <input
                     type="text"
@@ -133,7 +215,10 @@ function Dashboard({ isSidebarOpen }) {
               </div>
 
               {/* Download PDF Button - Stays on the Right */}
-              <button className="bg-[#15616D] text-white px-3 py-2 text-sm rounded-md hover:bg-[#0E4A52] cursor-pointer">
+              <button
+                onClick={handleDownloadPDF}
+                className="bg-[#15616D] text-white px-3 py-2 text-sm rounded-md hover:bg-[#0E4A52] cursor-pointer"
+              >
                 Download PDF
               </button>
             </div>
@@ -153,6 +238,7 @@ function Dashboard({ isSidebarOpen }) {
                   src={download.img}
                   alt={download.name}
                   className="w-8 h-8 cursor-pointer"
+                  onClick={handleDownloadPDF}
                 />
               </div>
             )}
@@ -208,7 +294,7 @@ function Dashboard({ isSidebarOpen }) {
                 <div className="fixed bottom-4 left-0 right-0  p-4 flex justify-between sm:justify-center gap-2">
                   <button
                     className="w-full sm:w-62 bg-gray-500 text-white px-3 py-2 rounded-md hover:bg-gray-600 cursor-pointer"
-                    onClick={() => setIsFilterModal(false)}
+                    onClick={handleCancleFilter}
                   >
                     Cancel
                   </button>
@@ -251,7 +337,7 @@ function Dashboard({ isSidebarOpen }) {
                   Billno={item.billNo}
                   Brand={item.brandName.label}
                   Date={item.date}
-                  Status="Draft"
+                  Status={item.status}
                 />
               ))
             ) : (

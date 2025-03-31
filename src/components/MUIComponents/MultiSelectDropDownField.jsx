@@ -17,7 +17,7 @@ const MenuProps = {
   },
 };
 
-function MultiSelectDropDownField({ options, title, onChange, value }) {
+function MultiSelectDropDownField({ options, title, onChange, value, isReadOnly }) {
   const [sizeName, setSizeName] = useState([]);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ function MultiSelectDropDownField({ options, title, onChange, value }) {
   return (
     <div>
       <Box className="bg-white w-62">
-        <FormControl fullWidth size="small">
+        <FormControl fullWidth size="small" disabled={isReadOnly}>
           <InputLabel id="demo-multiple-checkbox-label">{title}</InputLabel>
           <Select
             labelId="demo-multiple-checkbox-label"

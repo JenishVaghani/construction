@@ -5,10 +5,15 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 
-function DropDownField({ options, title, onChange, value }) {
+function DropDownField({
+  options,
+  title,
+  onChange,
+  value,
+  myStyle,
+  isReadOnly,
+}) {
   const [selectedValue, setSelectedValue] = useState("");
-  console.log("options", options);
-  
 
   useEffect(() => {
     if (value) {
@@ -25,8 +30,8 @@ function DropDownField({ options, title, onChange, value }) {
 
   return (
     <div>
-      <Box className="bg-white w-62">
-        <FormControl fullWidth size="small">
+      <Box className={`bg-white w-62 ${myStyle}`}>
+        <FormControl fullWidth size="small" disabled={isReadOnly}>
           <InputLabel>{title}</InputLabel>
           <Select label={title} onChange={handleChange} value={selectedValue}>
             {options.map((item, index) => (

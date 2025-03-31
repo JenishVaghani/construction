@@ -8,7 +8,6 @@ function Header({ toggleSidebar }) {
   return (
     <div className="bg-[#15616D] text-white flex items-center justify-between px-2 h-16 fixed top-0 right-0 z-10 left-0 sm:left-20 lg:left-56 duration-300">
       <div className="space-x-1 flex items-center">
-        
         <img
           src={listOpen.img}
           alt={listOpen.name}

@@ -4,7 +4,7 @@ import SwitchButtonField from "../MUIComponents/SwitchButtonField";
 import { useFormContext } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
-function CementInput({ selectedSizes, control, getCementInputData }) {
+function CementInput({ selectedSizes, control, getCementInputData, isReadOnly }) {
   const {
     register,
     watch,
@@ -93,6 +93,7 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
                   {...register(`sizesData.${item.label}.vendorRate`, {
                     required: "Vendor rate is required",
                   })}
+                  isReadOnly={isReadOnly}
                   onInput={(e) => {
                     if (e.target.value < 1) {
                       e.target.value = "";
@@ -112,6 +113,7 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
                   {...register(`sizesData.${item.label}.sellerRate`, {
                     required: "Seller rate is required",
                   })}
+                  isReadOnly={isReadOnly}
                   onInput={(e) => {
                     if (e.target.value < 1) {
                       e.target.value = "";
@@ -131,6 +133,7 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
                   {...register(`sizesData.${item.label}.qty`, {
                     required: "Qty is required",
                   })}
+                  isReadOnly={isReadOnly}
                   onInput={(e) => {
                     if (e.target.value < 1) {
                       e.target.value = "";
@@ -154,6 +157,7 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
                       name1="W"
                       name2="B"
                       value={field.value}
+                      isReadOnly={isReadOnly}
                       onChange={field.onChange}
                     />
                   )}
@@ -174,6 +178,7 @@ function CementInput({ selectedSizes, control, getCementInputData }) {
             {...register("billNo", {
               required: "Bill number is required",
             })}
+            isReadOnly={isReadOnly}
           />
           {errors.billNo && (
             <p className="text-red-500">{errors.billNo.message}</p>

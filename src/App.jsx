@@ -13,23 +13,30 @@ import AddBrand from "./components/Brands/AddBrand";
 import AddVendor from "./components/Vendors/AddVendor";
 import AddSeller from "./components/Sellers/AddSeller";
 import { useState } from "react";
+import Signup from "./components/Aurthontication/Signup";
+import Login from "./components/Aurthontication/Login";
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = (e) => {
-    setIsSidebarOpen(e)
-  }
+    setIsSidebarOpen(e);
+  };
   return (
     <>
       <BrowserRouter>
-        <Header toggleSidebar={() => toggleSidebar(!isSidebarOpen)}/>
-        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar}/>
+        <Signup />
+        <Login />
+        <Header toggleSidebar={() => toggleSidebar(!isSidebarOpen)} />
+        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
         <div className="ml-0 sm:ml-20 lg:ml-56 mt-16 duration-300">
           <Routes>
-            <Route path="/" element={<Dashboard/>} />
+            <Route path="/" element={<Dashboard />} />
 
             {/* Main Page Section */}
-            <Route path="/dashboard" element={<Dashboard isSidebarOpen={isSidebarOpen}/>} />
+            <Route
+              path="/dashboard"
+              element={<Dashboard isSidebarOpen={isSidebarOpen} />}
+            />
             <Route path="/members" element={<Members />} />
             <Route path="/brands" element={<Brands />} />
             <Route path="/vendors" element={<Vendors />} />

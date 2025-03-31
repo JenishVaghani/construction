@@ -5,11 +5,11 @@ import DropDownField from "../MUIComponents/DropDownField";
 import MultiSelectDropDownField from "../MUIComponents/MultiSelectDropDownField";
 import StealInput from "./StealInput";
 import CementInput from "./CementInput";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import DateField from "../MUIComponents/DateField";
 import { useForm, FormProvider, Controller } from "react-hook-form";
-import { addSuadas, updateSuada } from "../Redux/UserSlice";
+import { addSuadas, updateSuada, updateSuadaStatus } from "../Redux/UserSlice";
 import { v4 as uuidv4 } from "uuid";
 
 function AddSuada() {
@@ -27,10 +27,14 @@ function AddSuada() {
       totalVendorRate: 0,
       totalSellerRate: 0,
       billNo: "",
+      status: "Draft",
     },
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const isReadOnly = searchParams.get("mode") === "view";
 
   const {
     register,
@@ -65,6 +69,7 @@ function AddSuada() {
       );
 
       setValue("billNo", suadaToEdit.billNo);
+      setValue("status", suadaToEdit.status);
       if (suadaToEdit.sizesData) {
         const categoryName = suadaToEdit.sizes.name.map((s) => s);
         const categoryObj = suadaToEdit.sizesData;
@@ -175,10 +180,12 @@ function AddSuada() {
       totalQty: inputData.totalQty,
       totalVendorRate: inputData.totalVendorRate,
       totalSellerRate: inputData.totalSellerRate,
+      status: data.status,
     };
 
     if (isEditMode) {
       dispatch(updateSuada(storeSuadaData));
+      dispatch(updateSuadaStatus({ id, status: data.status }));
     } else {
       dispatch(addSuadas(storeSuadaData));
     }
@@ -210,6 +217,7 @@ function AddSuada() {
                     {...register("suadaVendorName", {
                       required: "Vendor is required",
                     })}
+                    isReadOnly={isReadOnly}
                     onChange={handleVendorSelect}
                   />
                   {errors.suadaVendorName && (
@@ -228,6 +236,7 @@ function AddSuada() {
                     render={({ field }) => (
                       <DateField
                         label="Date"
+                        isReadOnly={isReadOnly}
                         date={field.onChange}
                         value={watch("suadaDate")}
                       />
@@ -253,6 +262,7 @@ function AddSuada() {
                   {...register("suadaSellerName", {
                     required: "Seller is required",
                   })}
+                  isReadOnly={isReadOnly}
                   onChange={handleSellerSelect}
                 />
                 {errors.suadaSellerName && (
@@ -274,6 +284,7 @@ function AddSuada() {
                   {...register("suadaBrandName", {
                     required: "Brand is required",
                   })}
+                  isReadOnly={isReadOnly}
                   onChange={handleBrandSelect}
                 />
                 {errors.suadaBrandName && (
@@ -292,6 +303,7 @@ function AddSuada() {
                   {...register("suadaSizes", {
                     required: "Size is required",
                   })}
+                  isReadOnly={isReadOnly}
                   onChange={(e) => setValue("suadaSizes", e)}
                 />
                 {errors.suadaSizes && (
@@ -307,12 +319,14 @@ function AddSuada() {
                     selectedSizes={selectedSizes}
                     control={control}
                     getStealInputData={handleInputDataChange}
+                    isReadOnly={isReadOnly}
                   />
                 ) : (
                   <CementInput
                     selectedSizes={selectedSizes}
                     control={control}
                     getCementInputData={handleInputDataChange}
+                    isReadOnly={isReadOnly}
                   />
                 )
               ) : (
@@ -324,12 +338,15 @@ function AddSuada() {
 
             {/* Save Button Centered */}
             <div className="flex justify-center mt-4">
-              <button
-                type="submit"
-                className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
-              >
-                {isEditMode ? "Update" : "Save"}
-              </button>
+              {!isReadOnly && (
+                <button
+                  type="submit"
+                  className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
+                  disabled={isReadOnly}
+                >
+                  {isEditMode ? "Update" : "Save"}
+                </button>
+              )}
             </div>
           </form>
         </FormProvider>

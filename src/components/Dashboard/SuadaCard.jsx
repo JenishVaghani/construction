@@ -1,6 +1,8 @@
 import React from "react";
 import { EDIT, SHOW } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateSuadaStatus } from "../Redux/UserSlice";
 
 function SuadaCard({
   id,
@@ -14,12 +16,30 @@ function SuadaCard({
   Date,
   Status,
 }) {
+
   const navigate = useNavigate();
   const edit = EDIT;
   const show = SHOW;
 
   const handleEditClick = () => {
-    navigate(`/dashboard/edit/${id}`);
+    if (Status.toLowerCase() === "complete") {
+      navigate(`/dashboard/edit/${id}?mode=view`); // Read-Only Mode
+    } else {
+      navigate(`/dashboard/edit/${id}?mode=edit`);
+    }
+  };
+
+  const dispatch = useDispatch();
+
+  const handleChangeStatus = () => {
+    let newStatus = Status;
+    if (Status === "Draft") {
+      newStatus = "In Transite";
+    } else if (Status === "In Transite") {
+      newStatus = "Complete";
+    }
+
+    dispatch(updateSuadaStatus({ id, status: newStatus }));
   };
 
   return (
@@ -74,10 +94,20 @@ function SuadaCard({
       {/* Status Button */}
       <div className="mt-2">
         <button
-          className={`w-full text-white py-2 rounded-md shadow-md font-medium cursor-pointer
-          ${Status === "Draft" ? "bg-yellow-500 hover:bg-yellow-600" : ""}
-          ${Status === "In transite" ? "bg-red-500 hover:bg-red-600" : ""}
-          ${Status === "Complete" ? "bg-green-500 hover:bg-green-600" : ""}`}
+          type="submit"
+          onClick={handleChangeStatus}
+          className={`w-full text-white py-2 rounded-md shadow-md font-medium 
+          ${
+            Status === "Draft"
+              ? "bg-yellow-500 hover:bg-yellow-600 cursor-pointer"
+              : ""
+          }
+          ${
+            Status === "In Transite"
+              ? "bg-red-500 hover:bg-red-600 cursor-pointer"
+              : ""
+          }
+          ${Status === "Complete" ? "bg-green-600 cursor-default" : ""}`}
         >
           {Status}
         </button>

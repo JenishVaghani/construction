@@ -28,6 +28,13 @@ export const userSlice = createSlice({
     addSuadas(state, action) {
       state.suadas.push(action.payload);
     },
+    updateSuadaStatus: (state, action) => {
+      const { id, status } = action.payload;
+      const suadaIndex = state.suadas.findIndex((s) => s.id === id);
+      if (suadaIndex !== -1) {
+        state.suadas[suadaIndex].status = status;
+      }
+    },
 
     // CREATE operations
     updateMember(state, action) {
@@ -66,7 +73,7 @@ export const userSlice = createSlice({
       const index = state.suadas.findIndex(
         (suada) => suada.id === action.payload.id
       );
-      
+
       if (index !== -1) {
         state.suadas[index] = action.payload;
       }
@@ -107,6 +114,7 @@ export const {
   updateVendor,
   updateSeller,
   updateSuada,
+  updateSuadaStatus,
   deleteMember,
   deleteBrand,
   deleteVendor,
