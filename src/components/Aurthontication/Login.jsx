@@ -8,7 +8,12 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      username: "",
+      password: "",
+    }
+  });
 
   async function onSubmit(data) {
     const loginData = {

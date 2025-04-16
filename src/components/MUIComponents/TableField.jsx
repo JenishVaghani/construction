@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteBrand, deleteVendor, deleteSeller } from "../Redux/UserSlice";
 import { useDispatch } from "react-redux";
 import axios from "axios";
+import ConfirmField from "./ConfirmField";
 
 function TableField({ tableHeadingData, tableData }) {
   let colSpan = tableHeadingData.length + 1;
@@ -25,6 +26,8 @@ function TableField({ tableHeadingData, tableData }) {
   const deleted = DELETE;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState();
 
   const handleEdit = (item) => {
     if (item.type === "member") {
@@ -38,24 +41,34 @@ function TableField({ tableHeadingData, tableData }) {
     }
   };
 
-  const handleDelete = async (item) => {
+  const handleDeleteClick = async (item) => {
+    setSelectedItem(item);
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedItem) return;
+
     try {
-      if (item.type === "member") {
+      if (selectedItem.type === "member") {
         await axios.delete(
-          `http://192.168.1.3:5000/deleteMember/${item.userid}`
+          `http://192.168.1.3:5000/${selectedItem.userid}/deleteMember`
         );
         setShowTabledata((prevData) =>
-          prevData.filter((member) => member.userid !== item.userid)
+          prevData.filter((member) => member.userid !== selectedItem.userid)
         );
-      } else if (item.type === "brand") {
-        dispatch(deleteBrand(item.id));
-      } else if (item.type === "vendor") {
-        dispatch(deleteVendor(item.id));
-      } else if (item.type === "seller") {
-        dispatch(deleteSeller(item.id));
+      } else if (selectedItem.type === "brand") {
+        dispatch(deleteBrand(selectedItem.id));
+      } else if (selectedItem.type === "vendor") {
+        dispatch(deleteVendor(selectedItem.id));
+      } else if (selectedItem.type === "seller") {
+        dispatch(deleteSeller(selectedItem.id));
       }
     } catch (error) {
       console.error("Error deleting item:", error);
+    } finally {
+      setConfirmOpen(false);
+      setSelectedItem();
     }
   };
 
@@ -129,7 +142,7 @@ function TableField({ tableHeadingData, tableData }) {
                             src={deleted.img}
                             alt={deleted.name}
                             className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleDelete(item)}
+                            onClick={() => handleDeleteClick(item)}
                           />
                         </div>
                       </TableCell>
@@ -168,7 +181,7 @@ function TableField({ tableHeadingData, tableData }) {
                             src={deleted.img}
                             alt={deleted.name}
                             className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleDelete(item)}
+                            onClick={() => handleDeleteClick(item)}
                           />
                         </div>
                       </TableCell>
@@ -205,7 +218,7 @@ function TableField({ tableHeadingData, tableData }) {
                             src={deleted.img}
                             alt={deleted.name}
                             className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleDelete(item)}
+                            onClick={() => handleDeleteClick(item)}
                           />
                         </div>
                       </TableCell>
@@ -242,7 +255,7 @@ function TableField({ tableHeadingData, tableData }) {
                             src={deleted.img}
                             alt={deleted.name}
                             className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleDelete(item)}
+                            onClick={() => handleDeleteClick(item)}
                           />
                         </div>
                       </TableCell>
@@ -266,6 +279,13 @@ function TableField({ tableHeadingData, tableData }) {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <ConfirmField
+        open={confirmOpen}
+        handleClose={() => setConfirmOpen(false)}
+        handleConfirm={confirmDelete}
+        message={`Are you sure you want to delete this ${selectedItem?.type}?`}
+      />
     </div>
   );
 }
