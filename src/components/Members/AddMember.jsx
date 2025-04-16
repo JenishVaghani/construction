@@ -1,12 +1,10 @@
 import React, { useEffect } from "react";
 import { Breadcrumbs, Typography } from "@mui/material";
 import InputField from "../MUIComponents/InputField";
-import { useDispatch, useSelector } from "react-redux";
-import { addMembers } from "../Redux/UserSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
-import { updateMember } from "../Redux/UserSlice";
+import axios from "axios";
 
 function AddMember() {
   const {
@@ -19,26 +17,12 @@ function AddMember() {
       memberName: "",
       memberEmail: "",
       memberPhone: "",
+      memberPassword: "",
     },
   });
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const isEditMode = !!id;
-
-  const members = useSelector((state) => state.users.members);
-
-  const memberToEdit = isEditMode
-    ? members.find((member) => member.id === id)
-    : null;
-
-  useEffect(() => {
-    if (isEditMode && memberToEdit) {
-      setValue("memberName", memberToEdit.name);
-      setValue("memberEmail", memberToEdit.email);
-      setValue("memberPhone", memberToEdit.phone);
-    }
-  }, [isEditMode, memberToEdit, setValue]);
+  const { userid } = useParams();
+  const isEditMode = !!userid;
   const showAddMemberUrl = [
     <Link
       underline="hover"
@@ -54,23 +38,69 @@ function AddMember() {
     </Typography>,
   ];
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const storeMemberData = {
-      id: isEditMode ? id : uuidv4(),
+      userid: isEditMode ? userid : uuidv4(),
       type: "member",
       name: data.memberName,
       email: data.memberEmail,
       phone: data.memberPhone,
+      isAdmin: false,
     };
     console.log("storeMemberData = ", storeMemberData);
 
-    if (isEditMode) {
-      dispatch(updateMember(storeMemberData));
-    } else {
-      dispatch(addMembers(storeMemberData));
+    try {
+      let response;
+      if (isEditMode) {
+        // UPDATE Member
+        response = await axios.put(
+          "http://192.168.1.3:5000/updateMember",
+          storeMemberData
+        );
+      } else {
+        // ADD New Member
+        response = await axios.post(
+          "http://192.168.1.3:5000/addMember",
+          storeMemberData
+        );
+      }
+
+      console.log("API Response:", response.data);
+      navigate("/members");
+    } catch (error) {
+      console.error("Error sending data to server", error);
     }
-    navigate("/members");
   };
+
+  useEffect(() => {
+    const fetchMember = async () => {
+      if (isEditMode) {
+        try {
+          // Pela badha members fetch karo
+          const response = await axios.get(
+            "http://192.168.1.3:5000/getMembers"
+          );
+
+          if (response.data) {
+            // Response mathi userid match thaye te member search karo
+            const member = response.data.find((m) => m.userid === userid);
+
+            if (member) {
+              setValue("memberName", member.name);
+              setValue("memberEmail", member.email);
+              setValue("memberPhone", member.phone);
+            } else {
+              console.log("Member not found for userid:", userid);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching members:", error);
+        }
+      }
+    };
+
+    fetchMember();
+  }, [isEditMode, userid, setValue]);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -135,6 +165,7 @@ function AddMember() {
                 <p className="text-red-500">{errors.memberPhone.message}</p>
               )}
             </div>
+            
             <div className="flex justify-center mb-4">
               <button
                 type="submit"

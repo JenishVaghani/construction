@@ -1,24 +1,22 @@
+// import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-function Login({ setIsAuthenticated }) {
+export default function Login() {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const navigate = useNavigate();
-
-  const onSubmit = (data) => {
-    setIsAuthenticated(true);
-    console.log({
-      name: data.name,
+  async function onSubmit(data) {
+    const loginData = {
+      username: data.username,
       password: data.password,
-    });
-    navigate("/dashboard");
-  };
+    };
+    console.log("loginData = ", loginData);
+  }
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -26,16 +24,25 @@ function Login({ setIsAuthenticated }) {
         <h2 className="text-2xl font-bold text-[#15616D] text-center mb-6">
           Login
         </h2>
+        {/* {errorMessage && (
+          <p className="text-red-500 text-center mb-4">{errorMessage}</p>
+        )} */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
-            placeholder="Name"
+            placeholder="Username"
             className="w-full p-2 mt-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#15616D]"
-            {...register("name", {
-              required: "Name is required",
+            {...register("username", {
+              required: "Username is required",
+              minLength: {
+                value: 3,
+                message: "Enter a valid name",
+              },
             })}
           />
-          {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+          {errors.username && (
+            <p className="text-red-500">{errors.username.message}</p>
+          )}
           <input
             type="password"
             placeholder="Password"
@@ -54,15 +61,8 @@ function Login({ setIsAuthenticated }) {
             Login
           </button>
         </form>
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-[#15616D] font-bold">
-            Sign Up
-          </Link>
-        </p>
+       
       </div>
     </div>
   );
 }
-
-export default Login;

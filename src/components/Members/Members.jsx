@@ -1,15 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import TableField from "../MUIComponents/TableField";
-import { useSelector } from "react-redux";
 import { MEMBERTABLEHEADINGDATA } from "../../utils/constants";
+import axios from "axios";
 
 function Members() {
-  const members = useSelector((state) => state.users.members);
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const response = await axios.get("http://192.168.1.3:5000/getMembers");
+        const members = response.data.map((member) => ({
+          ...member,
+          type: "member",
+        }));
+        setTableData(members);
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      }
+    };
+    fetchMembers();
+  }, []);
 
   const navigate = useNavigate();
-  const tableData = members;
   const tableHeadingData = MEMBERTABLEHEADINGDATA;
   return (
     <div className="min-h-screen bg-gray-100">

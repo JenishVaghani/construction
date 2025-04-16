@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -6,20 +6,20 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { BRANDCATEGORYS } from "../../utils/constants";
 import { EDIT } from "../../utils/constants";
 import { DELETE } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
-import {
-  deleteMember,
-  deleteBrand,
-  deleteVendor,
-  deleteSeller,
-} from "../Redux/UserSlice";
+import { deleteBrand, deleteVendor, deleteSeller } from "../Redux/UserSlice";
 import { useDispatch } from "react-redux";
+import axios from "axios";
 
 function TableField({ tableHeadingData, tableData }) {
   let colSpan = tableHeadingData.length + 1;
+  const [showTableData, setShowTabledata] = useState(tableData);
+
+  useEffect(() => {
+    setShowTabledata(tableData);
+  }, [tableData]);
 
   const edit = EDIT;
   const deleted = DELETE;
@@ -28,7 +28,7 @@ function TableField({ tableHeadingData, tableData }) {
 
   const handleEdit = (item) => {
     if (item.type === "member") {
-      navigate(`/members/edit/${item.id}`);
+      navigate(`/members/edit/${item.userid}`);
     } else if (item.type === "brand") {
       navigate(`/brands/edit/${item.id}`);
     } else if (item.type === "vendor") {
@@ -38,17 +38,25 @@ function TableField({ tableHeadingData, tableData }) {
     }
   };
 
-  const handleDelete = (item) => {
-    if (item.type === "member") {
-      dispatch(deleteMember(item.id));
-    } else if (item.type === "brand") {
-      dispatch(deleteBrand(item.id));
-    } else if (item.type === "vendor") {
-      dispatch(deleteVendor(item.id));
-    } else if (item.type === "seller") {
-      dispatch(deleteSeller(item.id));
+  const handleDelete = async (item) => {
+    try {
+      if (item.type === "member") {
+        await axios.delete(`http://192.168.1.3:5000/deleteMember/${item.userid}`);
+        setShowTabledata((prevData) =>
+          prevData.filter((member) => member.userid !== item.userid)
+        );
+      } else if (item.type === "brand") {
+        dispatch(deleteBrand(item.id));
+      } else if (item.type === "vendor") {
+        dispatch(deleteVendor(item.id));
+      } else if (item.type === "seller") {
+        dispatch(deleteSeller(item.id));
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
     }
   };
+
   return (
     <div>
       <TableContainer
@@ -78,8 +86,8 @@ function TableField({ tableHeadingData, tableData }) {
             </TableRow>
           </TableHead>
           <TableBody className="bg-gray-100">
-            {tableData.length > 0 ? (
-              tableData.map((item, index) => (
+            {showTableData.length > 0 ? (
+              showTableData.map((item, index) => (
                 <TableRow
                   key={index}
                   className="border border-gray-300 hover:bg-white"
