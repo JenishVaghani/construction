@@ -41,7 +41,9 @@ function TableField({ tableHeadingData, tableData }) {
   const handleDelete = async (item) => {
     try {
       if (item.type === "member") {
-        await axios.delete(`http://192.168.1.3:5000/deleteMember/${item.userid}`);
+        await axios.delete(
+          `http://192.168.1.3:5000/deleteMember/${item.userid}`
+        );
         setShowTabledata((prevData) =>
           prevData.filter((member) => member.userid !== item.userid)
         );

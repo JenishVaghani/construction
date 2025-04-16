@@ -21,6 +21,7 @@ function Members() {
         console.error("Error fetching members:", error);
       }
     };
+    
     fetchMembers();
   }, []);
 

@@ -2,15 +2,17 @@ import React, { useEffect } from "react";
 import { Breadcrumbs, Typography } from "@mui/material";
 import InputField from "../MUIComponents/InputField";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import PasswordField from "../MUIComponents/PasswordField";
 
 function AddMember() {
   const {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -37,7 +39,6 @@ function AddMember() {
       {isEditMode ? "Edit Member" : "Add Member"}
     </Typography>,
   ];
-
   const onSubmit = async (data) => {
     const storeMemberData = {
       userid: isEditMode ? userid : uuidv4(),
@@ -45,6 +46,7 @@ function AddMember() {
       name: data.memberName,
       email: data.memberEmail,
       phone: data.memberPhone,
+      password: data.memberPassword,
       isAdmin: false,
     };
     console.log("storeMemberData = ", storeMemberData);
@@ -89,6 +91,7 @@ function AddMember() {
               setValue("memberName", member.name);
               setValue("memberEmail", member.email);
               setValue("memberPhone", member.phone);
+              setValue("memberPassword", member.password)
             } else {
               console.log("Member not found for userid:", userid);
             }
@@ -165,7 +168,33 @@ function AddMember() {
                 <p className="text-red-500">{errors.memberPhone.message}</p>
               )}
             </div>
-            
+            <div className="mb-4">
+              <Controller
+                name="memberPassword"
+                control={control}
+                defaultValue=""
+                rules={{
+                  required: "Password is required!",
+                  minLength: {
+                    value: 4,
+                    message: "Password must be at least 4 characters!",
+                  },
+                }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <PasswordField
+                      value={field.value}
+                      onChange={(e) => {
+                        field.onChange(e); // form ma set karva mate
+                      }}
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-500">{fieldState.error.message}</p>
+                    )}
+                  </>
+                )}
+              />
+            </div>
             <div className="flex justify-center mb-4">
               <button
                 type="submit"
