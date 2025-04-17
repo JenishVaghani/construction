@@ -12,6 +12,8 @@ function Members() {
     const fetchMembers = async () => {
       try {
         const response = await axios.get("http://192.168.1.3:5000/getMembers");
+        console.log("responce member", response.data);
+        
         const members = response.data.map((member) => ({
           ...member,
           type: "member",

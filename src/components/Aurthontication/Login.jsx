@@ -1,7 +1,7 @@
-// import axios from "axios";
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const {
@@ -12,16 +12,40 @@ export default function Login() {
     defaultValues: {
       username: "",
       password: "",
-    }
+    },
   });
 
-  async function onSubmit(data) {
-    const loginData = {
-      username: data.username,
-      password: data.password,
-    };
-    console.log("loginData = ", loginData);
-  }
+  const [errorMessage, setErrorMessage] = useState();
+
+  const navigate = useNavigate();
+
+  const onSubmit = async (data) => {
+    try {
+      const storeUserData = {
+        username: data.username,
+        password: data.password,
+      };
+      const response = await axios.post(
+        "http://192.168.1.3:5000/login",
+        storeUserData
+      );
+
+      console.log("Response = ", response);
+
+      if (response.status === 200) {
+        localStorage.setItem("user", response.data.message);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        // Invalid username or password from backend
+        setErrorMessage(error.response.data.message);
+      } else {
+        console.error("Error during login:", error);
+        setErrorMessage("Server Error! Please try again later.");
+      }
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -29,9 +53,9 @@ export default function Login() {
         <h2 className="text-2xl font-bold text-[#15616D] text-center mb-6">
           Login
         </h2>
-        {/* {errorMessage && (
+        {errorMessage && (
           <p className="text-red-500 text-center mb-4">{errorMessage}</p>
-        )} */}
+        )}
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
@@ -66,7 +90,6 @@ export default function Login() {
             Login
           </button>
         </form>
-       
       </div>
     </div>
   );

@@ -39,6 +39,37 @@ function AddMember() {
       {isEditMode ? "Edit Member" : "Add Member"}
     </Typography>,
   ];
+  useEffect(() => {
+    const fetchMember = async () => {
+      if (isEditMode) {
+        try {
+          // Pela badha members fetch karo
+          const response = await axios.get(
+            "http://192.168.1.3:5000/getMembers"
+          );
+
+          if (response.data) {
+            // Response mathi userid match thaye te member search karo
+            const member = response.data.find((m) => m.userid === userid);
+
+            if (member) {
+              setValue("memberName", member.name);
+              setValue("memberEmail", member.email);
+              setValue("memberPhone", member.phone);
+              setValue("memberPassword", member.password);
+            } else {
+              console.log("Member not found for userid:", userid);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching members:", error);
+        }
+      }
+    };
+
+    fetchMember();
+  }, [isEditMode, userid, setValue]);
+
   const onSubmit = async (data) => {
     const storeMemberData = {
       userid: isEditMode ? userid : uuidv4(),
@@ -73,37 +104,6 @@ function AddMember() {
       console.error("Error sending data to server", error);
     }
   };
-
-  useEffect(() => {
-    const fetchMember = async () => {
-      if (isEditMode) {
-        try {
-          // Pela badha members fetch karo
-          const response = await axios.get(
-            "http://192.168.1.3:5000/getMembers"
-          );
-
-          if (response.data) {
-            // Response mathi userid match thaye te member search karo
-            const member = response.data.find((m) => m.userid === userid);
-
-            if (member) {
-              setValue("memberName", member.name);
-              setValue("memberEmail", member.email);
-              setValue("memberPhone", member.phone);
-              setValue("memberPassword", member.password)
-            } else {
-              console.log("Member not found for userid:", userid);
-            }
-          }
-        } catch (error) {
-          console.error("Error fetching members:", error);
-        }
-      }
-    };
-
-    fetchMember();
-  }, [isEditMode, userid, setValue]);
 
   return (
     <div className="min-h-screen bg-gray-100">

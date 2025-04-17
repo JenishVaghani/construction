@@ -14,6 +14,7 @@ import AddSeller from "./components/Sellers/AddSeller";
 import AuthGuard from "./components/MiddleWare/AuthGuard";
 import Layout from "./components/Layout/Layout";
 import { useState } from "react";
+import NotFoundPage from "./components/Aurthontication/NotFoundPage";
 function App() {
   const [getIsSidebarOpen, setGetIsSidebarOpen] = useState("");
   return (
@@ -26,40 +27,44 @@ function App() {
           <Route
             path="/*"
             element={
-              // <AuthGuard>
-              <Layout setGetIsSidebarOpen={setGetIsSidebarOpen}>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={<Dashboard isSidebarOpen={getIsSidebarOpen} />}
-                  />
-                  {/* Main Page Section */}
-                  <Route
-                    path="/dashboard"
-                    element={<Dashboard isSidebarOpen={getIsSidebarOpen} />}
-                  />
-                  <Route path="/members" element={<Members />} />
-                  <Route path="/brands" element={<Brands />} />
-                  <Route path="/vendors" element={<Vendors />} />
-                  <Route path="/sellers" element={<Sellers />} />
-                  <Route path="/settings" element={<Settings />} />
+              <AuthGuard>
+                <Layout setGetIsSidebarOpen={setGetIsSidebarOpen}>
+                  <Routes>
+                    <Route path="*" element={<NotFoundPage />}></Route>
+                    <Route
+                      path="/"
+                      element={<Dashboard isSidebarOpen={getIsSidebarOpen} />}
+                    />
+                    {/* Main Page Section */}
+                    <Route
+                      path="/dashboard"
+                      element={<Dashboard isSidebarOpen={getIsSidebarOpen} />}
+                    />
+                    <Route path="/members" element={<Members />} />
+                    <Route path="/brands" element={<Brands />} />
+                    <Route path="/vendors" element={<Vendors />} />
+                    <Route path="/sellers" element={<Sellers />} />
+                    <Route path="/settings" element={<Settings />} />
 
-                  {/* Add Page Section */}
-                  <Route path="/members/addMember" element={<AddMember />} />
-                  <Route path="/brands/addBrand" element={<AddBrand />} />
-                  <Route path="/sellers/addSeller" element={<AddSeller />} />
-                  <Route path="/vendors/addVendor" element={<AddVendor />} />
-                  <Route path="/dashboard/addSuada" element={<AddSuada />} />
+                    {/* Add Page Section */}
+                    <Route path="/members/addMember" element={<AddMember />} />
+                    <Route path="/brands/addBrand" element={<AddBrand />} />
+                    <Route path="/sellers/addSeller" element={<AddSeller />} />
+                    <Route path="/vendors/addVendor" element={<AddVendor />} />
+                    <Route path="/dashboard/addSuada" element={<AddSuada />} />
 
-                  {/* Edit Page Section */}
-                  <Route path="/members/edit/:userid" element={<AddMember />} />
-                  <Route path="/brands/edit/:id" element={<AddBrand />} />
-                  <Route path="/vendors/edit/:id" element={<AddVendor />} />
-                  <Route path="/sellers/edit/:id" element={<AddSeller />} />
-                  <Route path="/dashboard/edit/:id" element={<AddSuada />} />
-                </Routes>
-              </Layout>
-              // </AuthGuard>
+                    {/* Edit Page Section */}
+                    <Route
+                      path="/members/edit/:userid"
+                      element={<AddMember />}
+                    />
+                    <Route path="/brands/edit/:id" element={<AddBrand />} />
+                    <Route path="/vendors/edit/:id" element={<AddVendor />} />
+                    <Route path="/sellers/edit/:id" element={<AddSeller />} />
+                    <Route path="/dashboard/edit/:id" element={<AddSuada />} />
+                  </Routes>
+                </Layout>
+              </AuthGuard>
             }
           />
         </Routes>

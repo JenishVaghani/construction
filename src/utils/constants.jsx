@@ -12,6 +12,7 @@ import Delete from "./images/delete.png";
 import ListOpen from "./images/listOpen.png";
 import Filter from "./images/filter.png";
 import Download from "./images/download.png"
+import Image404 from "./images/404.png"
 
 export const TEQNODUX = { img: Teqnodux, name: "teqnodux" };
 export const PROFILE = { img: Profile, name: "Jenish Vaghani" };
@@ -21,6 +22,7 @@ export const DELETE = { img: Delete, name: "Delete" };
 export const LISTOPEN = { img: ListOpen, name: "List Open" };
 export const FILTER = { img: Filter, name: "Filter" };
 export const DOWNLOAD = {img: Download, name: "Download"}
+export const IMAGE404 = {img: Image404, name: "Image404"}
 
 export const SIDEDETAILS = [
   { img: Dashboard, name: "dashboard", title: "Dashboard" },
