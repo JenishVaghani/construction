@@ -1,11 +1,10 @@
 import { Breadcrumbs, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../MUIComponents/InputField";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addVendors, updateVendor } from "../Redux/UserSlice";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 function AddVendor() {
   const {
@@ -20,15 +19,25 @@ function AddVendor() {
       vendorPhone: "",
     },
   });
-  const dispatch = useDispatch();
+  const [getVendors, setGetVendors] = useState();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
 
-  const vendors = useSelector((state) => state.users.vendors);
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        const response = await axios.get("http://192.168.1.3:5000/getVendors");
+        setGetVendors(response.data || "");
+      } catch (error) {
+        console.error("Error fetching vendors:", error);
+      }
+    };
+    fetchVendors();
+  }, []);
 
   const vendorToEdit = isEditMode
-    ? vendors.find((vendor) => vendor.id === id)
+    ? getVendors?.find((vendor) => vendor.id === id)
     : null;
 
   useEffect(() => {
@@ -54,7 +63,7 @@ function AddVendor() {
     </Typography>,
   ];
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const storeVendorData = {
       id: isEditMode ? id : uuidv4(),
       type: "vendor",
@@ -62,11 +71,24 @@ function AddVendor() {
       email: data.vendorEmail,
       phone: data.vendorPhone,
     };
-
-    if (isEditMode) {
-      dispatch(updateVendor(storeVendorData));
-    } else {
-      dispatch(addVendors(storeVendorData));
+    console.log("storeVendorData", storeVendorData);
+    try {
+      let response;
+      if (isEditMode) {
+        response = await axios.put(
+          "http://192.168.1.3:5000/updateVendor",
+          storeVendorData
+        );
+        console.log("response updated", response);
+      } else {
+        response = await axios.post(
+          "http://192.168.1.3:5000/addVendor",
+          storeVendorData
+        );
+        console.log("response", response);
+      }
+    } catch (error) {
+      console.error("Error sending data to server", error);
     }
     navigate("/vendors");
   };

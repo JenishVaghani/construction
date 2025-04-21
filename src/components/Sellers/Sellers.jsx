@@ -1,14 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import TableField from "../MUIComponents/TableField";
-import { useSelector } from "react-redux";
 import { SELLERTABLEHEADINGDATA } from "../../utils/constants";
+import axios from "axios";
 
 function Sellers() {
-  const sellers = useSelector((state) => state.users.sellers);
   const navigate = useNavigate();
-  const tableData = sellers;
+  const [tableData, setTableData] = useState([]);
+  useEffect(() => {
+    const fetchSellers = async () => {
+      try {
+        const response = await axios.get(" http://192.168.1.3:5000/getSellers");
+        const sellers = response.data.map((seller) => ({
+          ...seller,
+          type: "seller",
+        }));
+        setTableData(sellers);
+      } catch (error) {
+        console.error("Error fetching sellers:", error);
+      }
+    };
+    fetchSellers();
+  }, []);
   const tableHeadingData = SELLERTABLEHEADINGDATA;
   return (
     <div className="min-h-screen bg-gray-100">

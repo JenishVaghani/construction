@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DropDownField from "../MUIComponents/DropDownField";
 import {
   BRANDCATEGORYS,
@@ -8,11 +8,10 @@ import {
 import MultiSelectDropDownField from "../MUIComponents/MultiSelectDropDownField";
 import { Breadcrumbs, Typography } from "@mui/material";
 import InputField from "../MUIComponents/InputField";
-import { useDispatch, useSelector } from "react-redux";
-import { addBrands, updateBrand } from "../Redux/UserSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 function AddBrand() {
   const {
@@ -28,7 +27,7 @@ function AddBrand() {
       brandSizes: [],
     },
   });
-  const dispatch = useDispatch();
+  const [getBrands, setGetBrands] = useState();
   const navigate = useNavigate();
   const brandCategorys = BRANDCATEGORYS;
   const cementSizes = CEMENTSIZESNAME;
@@ -36,19 +35,48 @@ function AddBrand() {
   const { id } = useParams();
   const isEditMode = !!id;
 
-  const brands = useSelector((state) => state.users.brands);
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const response = await axios.get("http://192.168.1.3:5000/getBrands");
+        setGetBrands(response.data || "");
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    };
+    fetchBrands();
+  }, []);
 
   const brandToEdit = isEditMode
-    ? brands.find((brand) => brand.id === id)
+    ? getBrands?.find((item) => item.id === id)
     : null;
 
   useEffect(() => {
     if (isEditMode && brandToEdit) {
       setValue("brandName", brandToEdit.name);
-      setValue("brandCategory", brandToEdit.category);
-      setValue("brandSizes", brandToEdit.sizes);
+
+      // brandCategory set kariye proper object mukine
+      const selectedCategory = brandCategorys.find(
+        (b) => b.value === brandToEdit.category
+      );
+      setValue("brandCategory", selectedCategory || null);
+
+      // Sizes Logic (Category check pachi)
+      let sizesList = [];
+
+      if (selectedCategory?.label === "Cement") {
+        sizesList = CEMENTSIZESNAME.filter((sizeObj) =>
+          brandToEdit.sizes.includes(sizeObj.value)
+        );
+      } else if (selectedCategory?.label === "Steal") {
+        sizesList = STEALSIZESNAME.filter((sizeObj) =>
+          brandToEdit.sizes.includes(sizeObj.value)
+        );
+      }
+
+      setValue("brandSizes", sizesList);
     }
-  }, [isEditMode, brandToEdit, setValue]);
+  }, [isEditMode, brandToEdit, setValue, brandCategorys]);
 
   const brandCategory = watch("brandCategory");
 
@@ -106,19 +134,35 @@ function AddBrand() {
     setValue("brandSizes", selectedSizes);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    // API Data
     const storeBrandData = {
       id: isEditMode ? id : uuidv4(),
       type: "brand",
       name: data.brandName,
-      category: data.brandCategory,
-      sizes: data.brandSizes,
+      category: data.brandCategory.value,
+      sizes: data.brandSizes.map((index) => index.value),
     };
+    console.log("storeBrandData", storeBrandData);
 
-    if (isEditMode) {
-      dispatch(updateBrand(storeBrandData));      
-    } else {
-      dispatch(addBrands(storeBrandData));
+    // Post API to Brand
+    try {
+      let response;
+      if (isEditMode) {
+        response = await axios.put(
+          "http://192.168.1.3:5000/updateBrand",
+          storeBrandData
+        );
+        console.log("API update Response:", response.data);
+      } else {
+        response = await axios.post(
+          "http://192.168.1.3:5000/addBrand",
+          storeBrandData
+        );
+        console.log("API add Response:", response.data);
+      }
+    } catch (error) {
+      console.error("Error sending data to server", error);
     }
 
     navigate("/brands");
@@ -150,7 +194,7 @@ function AddBrand() {
             <div className="mb-4">
               <DropDownField
                 options={brandCategorys}
-                //me je select ma value set kari 6e te value math thavi pade so .value use karu 6e baki value j difference ha se to select work j nathi karvanu......
+                //me je select ma value set kari 6e te value mathch thavi pade so .value use karu 6e baki value j difference ha se to select work j nathi karvanu......
                 value={watch("brandCategory")?.value || ""}
                 title="Category"
                 {...register("brandCategory", {

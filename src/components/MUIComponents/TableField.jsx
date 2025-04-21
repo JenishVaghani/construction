@@ -9,10 +9,13 @@ import Paper from "@mui/material/Paper";
 import { EDIT } from "../../utils/constants";
 import { DELETE } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
-import { deleteBrand, deleteVendor, deleteSeller } from "../Redux/UserSlice";
-import { useDispatch } from "react-redux";
 import axios from "axios";
 import ConfirmField from "./ConfirmField";
+import {
+  BRANDCATEGORYS,
+  CEMENTSIZESNAME,
+  STEALSIZESNAME,
+} from "../../utils/constants";
 
 function TableField({ tableHeadingData, tableData }) {
   let colSpan = tableHeadingData.length + 1;
@@ -25,7 +28,6 @@ function TableField({ tableHeadingData, tableData }) {
   const edit = EDIT;
   const deleted = DELETE;
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState();
 
@@ -58,11 +60,27 @@ function TableField({ tableHeadingData, tableData }) {
           prevData.filter((member) => member.userid !== selectedItem.userid)
         );
       } else if (selectedItem.type === "brand") {
-        dispatch(deleteBrand(selectedItem.id));
+        await axios.delete(
+          `http://192.168.1.3:5000/${selectedItem.id}/deleteBrand`
+        );
+        setShowTabledata((prevData) =>
+          prevData.filter((brand) => brand.id !== selectedItem.id)
+        );
       } else if (selectedItem.type === "vendor") {
-        dispatch(deleteVendor(selectedItem.id));
+        await axios.delete(
+          `http://192.168.1.3:5000/${selectedItem.id}/deleteVendor`
+        );
+        setShowTabledata((prevData) =>
+          prevData.filter((vendor) => vendor.id !== selectedItem.id)
+        );
       } else if (selectedItem.type === "seller") {
-        dispatch(deleteSeller(selectedItem.id));
+        await axios.delete(
+          `http://192.168.1.3:5000/${selectedItem.id}/deleteSeller`
+        );
+
+        setShowTabledata((prevData) =>
+          prevData.filter((seller) => seller.id !== selectedItem.id)
+        );
       }
     } catch (error) {
       console.error("Error deleting item:", error);
@@ -159,15 +177,30 @@ function TableField({ tableHeadingData, tableData }) {
                         align="center"
                         className="border border-gray-300"
                       >
-                        {item.category.label}
+                        {BRANDCATEGORYS.find(
+                          (brand) => brand.value === item.category
+                        )?.label || "Unknown"}
                       </TableCell>
                       <TableCell
                         align="center"
                         className="border border-gray-300"
                       >
                         {Array.isArray(item.sizes)
-                          ? item.sizes.map((size) => size.label).join(", ")
-                          : item.sizes?.label}
+                          ? item.sizes
+                              .map((sizeValue) => {
+                                const sizeData =
+                                  item.category ===
+                                  "8b64b5f2-7f1a-4e47-b00a-18ff1126e6fb"
+                                    ? STEALSIZESNAME.find(
+                                        (s) => s.value === sizeValue
+                                      )
+                                    : CEMENTSIZESNAME.find(
+                                        (s) => s.value === sizeValue
+                                      );
+                                return sizeData ? sizeData.label : "Unknown";
+                              })
+                              .join(", ")
+                          : "No Sizes"}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center justify-center space-x-6 mr-8 ml-8">

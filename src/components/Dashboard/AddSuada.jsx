@@ -11,6 +11,7 @@ import DateField from "../MUIComponents/DateField";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { addSuadas, updateSuada, updateSuadaStatus } from "../Redux/UserSlice";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 function AddSuada() {
   const methods = useForm({
@@ -30,11 +31,6 @@ function AddSuada() {
       status: "Draft",
     },
   });
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const isReadOnly = searchParams.get("mode") === "view";
 
   const {
     register,
@@ -46,7 +42,12 @@ function AddSuada() {
     formState: { errors },
   } = methods;
 
-  const vendorsData = useSelector((state) => state.users.vendors);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [vendorsData, setVendorData] = useState([]);
+  const searchParams = new URLSearchParams(location.search);
+  const isReadOnly = searchParams.get("mode") === "view";
   const sellersData = useSelector((state) => state.users.sellers);
   const brandsData = useSelector((state) => state.users.brands);
 
@@ -56,6 +57,18 @@ function AddSuada() {
   const suadaToEdit = isEditMode
     ? suadas.find((suada) => suada.id === id)
     : null;
+
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        const response = await axios.get("http://192.168.1.3:5000/getVendors");
+        setVendorData(response.data || "");
+      } catch (error) {
+        console.error("Error fetching vendors:", error);
+      }
+    };
+    fetchVendors();
+  }, []);
 
   useEffect(() => {
     if (isEditMode && suadaToEdit) {

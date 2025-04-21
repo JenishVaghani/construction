@@ -1,16 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BRANDTABLEHEADINGDATA } from "../../utils/constants";
 import { FaSearch } from "react-icons/fa";
 import TableField from "../MUIComponents/TableField";
-import { useSelector } from "react-redux";
+import axios from "axios";
 
 function Brands() {
   const navigate = useNavigate();
-  const brands = useSelector((state) => state.users.brands);
-
-  const tableData = brands;
   const tableHeadingData = BRANDTABLEHEADINGDATA;
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const response = await axios.get("http://192.168.1.3:5000/getBrands");
+        const brands = response.data.map((brand) => ({
+          ...brand,
+          type: "brand",
+        }));
+        console.log("brands", brands);
+
+        setTableData(brands);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    };
+    fetchBrands();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">

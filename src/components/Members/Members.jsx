@@ -6,14 +6,14 @@ import { MEMBERTABLEHEADINGDATA } from "../../utils/constants";
 import axios from "axios";
 
 function Members() {
+  const navigate = useNavigate();
+  const tableHeadingData = MEMBERTABLEHEADINGDATA;
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await axios.get("http://192.168.1.3:5000/getMembers");
-        console.log("responce member", response.data);
-        
+        const response = await axios.get("http://192.168.1.3:5000/getMembers");        
         const members = response.data.map((member) => ({
           ...member,
           type: "member",
@@ -27,8 +27,6 @@ function Members() {
     fetchMembers();
   }, []);
 
-  const navigate = useNavigate();
-  const tableHeadingData = MEMBERTABLEHEADINGDATA;
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="p-4">

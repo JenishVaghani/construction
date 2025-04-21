@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import TableField from "../MUIComponents/TableField";
-import { useSelector } from "react-redux";
 import { VENDORTABLEHEADINGDATA } from "../../utils/constants";
+import { useState } from "react";
+import axios from "axios";
 
 function Vendors() {
-  const vendors = useSelector((state) => state.users.vendors);
   const navigate = useNavigate();
-  const tableData = vendors;
+  const [tableData, setTableData] = useState([]);
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        const response = await axios.get("http://192.168.1.3:5000/getVendors");
+        const vendors = response.data.map((vendor) => ({
+          ...vendor,
+          type: "vendor",
+        }));
+        setTableData(vendors);
+      } catch (error) {
+        console.error("Error fetching vendors:", error);
+      }
+    };
+    fetchVendors();
+  }, []);
   const tableHeadingData = VENDORTABLEHEADINGDATA;
   return (
     <div className="min-h-screen bg-gray-100">

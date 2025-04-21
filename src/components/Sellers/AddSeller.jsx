@@ -1,11 +1,10 @@
 import { Breadcrumbs, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import InputField from "../MUIComponents/InputField";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addSellers, updateSeller } from "../Redux/UserSlice";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 function AddSeller() {
   const {
@@ -20,15 +19,25 @@ function AddSeller() {
       sellerPhone: "",
     },
   });
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
+  const [getSellers, setGetSellers] = useState();
 
-  const sellers = useSelector((state) => state.users.sellers);
+  useEffect(() => {
+    const fetchSellers = async () => {
+      try {
+        const response = await axios.get("http://192.168.1.3:5000/getSellers");
+        setGetSellers(response.data || "");
+      } catch (error) {
+        console.error("Error fetching sellers:", error);
+      }
+    };
+    fetchSellers();
+  }, []);
 
   const sellerToEdit = isEditMode
-    ? sellers.find((seller) => seller.id === id)
+    ? getSellers?.find((seller) => seller.id === id)
     : null;
 
   useEffect(() => {
@@ -54,7 +63,7 @@ function AddSeller() {
     </Typography>,
   ];
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const storeSellerData = {
       id: isEditMode ? id : uuidv4(),
       type: "seller",
@@ -62,11 +71,25 @@ function AddSeller() {
       email: data.sellerEmail,
       phone: data.sellerPhone,
     };
-
-    if (isEditMode) {
-      dispatch(updateSeller(storeSellerData));
-    } else {
-      dispatch(addSellers(storeSellerData));
+    console.log("storeSellerData", storeSellerData);
+    
+    try {
+      let response;
+      if (isEditMode) {
+        response = await axios.put(
+          "http://192.168.1.3:5000/updataSeller",
+          storeSellerData
+        );
+        console.log("response updated", response);
+      } else {
+        response = await axios.post(
+          "http://192.168.1.3:5000/addSeller",
+          storeSellerData
+        );
+        console.log("response", response);
+      }
+    } catch (error) {
+      console.error("Error sending data to server:", error);
     }
 
     navigate("/sellers");
