@@ -4,7 +4,12 @@ import SwitchButtonField from "../MUIComponents/SwitchButtonField";
 import { useFormContext } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
-function CementInput({ selectedSizes, control, getCementInputData, isReadOnly }) {
+function CementInput({
+  selectedSizes,
+  control,
+  getCementInputData,
+  isReadOnly,
+}) {
   const {
     register,
     watch,
@@ -19,10 +24,11 @@ function CementInput({ selectedSizes, control, getCementInputData, isReadOnly })
     const newSizesData = {};
 
     selectedSizes.forEach((size) => {
-      newSizesData[size.label] = sizesData[size.label] || {
+      newSizesData[size.value] = sizesData[size.value] || {
         qty: "",
-        vendorRate:"",
+        vendorRate: "",
         sellerRate: "",
+        moneyType: "W",
       };
     });
 
@@ -90,7 +96,7 @@ function CementInput({ selectedSizes, control, getCementInputData, isReadOnly })
                 <InputField
                   label="Vendor rate"
                   type="number"
-                  {...register(`sizesData.${item.label}.vendorRate`, {
+                  {...register(`sizesData.${item.value}.vendorRate`, {
                     required: "Vendor rate is required",
                   })}
                   isReadOnly={isReadOnly}
@@ -100,9 +106,9 @@ function CementInput({ selectedSizes, control, getCementInputData, isReadOnly })
                     }
                   }}
                 />
-                {errors.sizesData?.[item.label]?.vendorRate && (
+                {errors.sizesData?.[item.value]?.vendorRate && (
                   <p className="text-red-500">
-                    {errors.sizesData[item.label].vendorRate.message}
+                    {errors.sizesData[item.value].vendorRate.message}
                   </p>
                 )}
               </div>
@@ -110,7 +116,7 @@ function CementInput({ selectedSizes, control, getCementInputData, isReadOnly })
                 <InputField
                   label="Seller rate"
                   type="number"
-                  {...register(`sizesData.${item.label}.sellerRate`, {
+                  {...register(`sizesData.${item.value}.sellerRate`, {
                     required: "Seller rate is required",
                   })}
                   isReadOnly={isReadOnly}
@@ -120,9 +126,9 @@ function CementInput({ selectedSizes, control, getCementInputData, isReadOnly })
                     }
                   }}
                 />
-                {errors.sizesData?.[item.label]?.sellerRate && (
+                {errors.sizesData?.[item.value]?.sellerRate && (
                   <p className="text-red-500">
-                    {errors.sizesData[item.label].sellerRate.message}
+                    {errors.sizesData[item.value].sellerRate.message}
                   </p>
                 )}
               </div>
@@ -130,7 +136,7 @@ function CementInput({ selectedSizes, control, getCementInputData, isReadOnly })
                 <InputField
                   label="Qty"
                   type="number"
-                  {...register(`sizesData.${item.label}.qty`, {
+                  {...register(`sizesData.${item.value}.qty`, {
                     required: "Qty is required",
                   })}
                   isReadOnly={isReadOnly}
@@ -140,23 +146,23 @@ function CementInput({ selectedSizes, control, getCementInputData, isReadOnly })
                     }
                   }}
                 />
-                {errors.sizesData?.[item.label]?.qty && (
+                {errors.sizesData?.[item.value]?.qty && (
                   <p className="text-red-500">
-                    {errors.sizesData[item.label].qty.message}
+                    {errors.sizesData[item.value].qty.message}
                   </p>
                 )}
               </div>
 
               <div className=" items-center justify-center">
                 <Controller
-                  name={`sizesData.${item.label}.moneyType`}
                   control={control}
+                  name={`sizesData.${item.value}.moneyType`}
                   defaultValue="W"
                   render={({ field }) => (
                     <SwitchButtonField
                       name1="W"
                       name2="B"
-                      value={field.value}
+                      value={field.value ?? "W"}
                       isReadOnly={isReadOnly}
                       onChange={field.onChange}
                     />

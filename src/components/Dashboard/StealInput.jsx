@@ -20,7 +20,7 @@ function StealInput({ selectedSizes, control, getStealInputData }) {
     const newSizesData = {};
 
     selectedSizes.forEach((size) => {
-      newSizesData[size.label] = sizesData[size.label] || {
+      newSizesData[size.value] = sizesData[size.value] || {
         qty: 0,
         vendorRate: 0,
         sellerRate: 0,
@@ -91,7 +91,7 @@ function StealInput({ selectedSizes, control, getStealInputData }) {
                 <InputField
                   label="Vendor rate"
                   type="number"
-                  {...register(`sizesData.${item.label}.vendorRate`, {
+                  {...register(`sizesData.${item.value}.vendorRate`, {
                     required: "Vendor rate is required",
                   })}
                   onInput={(e) => {
@@ -100,9 +100,9 @@ function StealInput({ selectedSizes, control, getStealInputData }) {
                     }
                   }}
                 />
-                {errors.sizesData?.[item.label]?.vendorRate && (
+                {errors.sizesData?.[item.value]?.vendorRate && (
                   <p className="text-red-500">
-                    {errors.sizesData[item.label].vendorRate.message}
+                    {errors.sizesData[item.value].vendorRate.message}
                   </p>
                 )}
               </div>
@@ -110,7 +110,7 @@ function StealInput({ selectedSizes, control, getStealInputData }) {
                 <InputField
                   label="Seller rate"
                   type="number"
-                  {...register(`sizesData.${item.label}.sellerRate`, {
+                  {...register(`sizesData.${item.value}.sellerRate`, {
                     required: "Seller rate is required",
                   })}
                   onInput={(e) => {
@@ -119,9 +119,9 @@ function StealInput({ selectedSizes, control, getStealInputData }) {
                     }
                   }}
                 />
-                {errors.sizesData?.[item.label]?.sellerRate && (
+                {errors.sizesData?.[item.value]?.sellerRate && (
                   <p className="text-red-500">
-                    {errors.sizesData[item.label].sellerRate.message}
+                    {errors.sizesData[item.value].sellerRate.message}
                   </p>
                 )}
               </div>
@@ -129,7 +129,7 @@ function StealInput({ selectedSizes, control, getStealInputData }) {
                 <InputField
                   label="Qty"
                   type="number"
-                  {...register(`sizesData.${item.label}.qty`, {
+                  {...register(`sizesData.${item.value}.qty`, {
                     required: " Qty is required",
                   })}
                   onInput={(e) => {
@@ -138,16 +138,16 @@ function StealInput({ selectedSizes, control, getStealInputData }) {
                     }
                   }}
                 />
-                {errors.sizesData?.[item.label]?.qty && (
+                {errors.sizesData?.[item.value]?.qty && (
                   <p className="text-red-500">
-                    {errors.sizesData[item.label].qty.message}
+                    {errors.sizesData[item.value].qty.message}
                   </p>
                 )}
               </div>
 
               <div className=" items-center justify-center">
                 <Controller
-                  name={`sizesData.${item.label}.moneyType`}
+                  name={`sizesData.${item.value}.moneyType`}
                   control={control}
                   defaultValue="W"
                   render={({ field }) => (

@@ -12,6 +12,7 @@ import { useForm, FormProvider, Controller } from "react-hook-form";
 import { addSuadas, updateSuada, updateSuadaStatus } from "../Redux/UserSlice";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import { CEMENTSIZESNAME, STEALSIZESNAME } from "../../utils/constants";
 
 function AddSuada() {
   const methods = useForm({
@@ -45,11 +46,11 @@ function AddSuada() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [vendorsData, setVendorData] = useState([]);
+  const [vendorsData, setVendorsData] = useState([]);
+  const [sellersData, setSellersData] = useState([]);
+  const [brandsData, setBrandsData] = useState([]);
   const searchParams = new URLSearchParams(location.search);
   const isReadOnly = searchParams.get("mode") === "view";
-  const sellersData = useSelector((state) => state.users.sellers);
-  const brandsData = useSelector((state) => state.users.brands);
 
   const { id } = useParams();
   const isEditMode = !!id;
@@ -57,19 +58,33 @@ function AddSuada() {
   const suadaToEdit = isEditMode
     ? suadas.find((suada) => suada.id === id)
     : null;
-
+  const suadaBrandName = watch("suadaBrandName");
   useEffect(() => {
-    const fetchVendors = async () => {
+    const fetchDatas = async () => {
       try {
-        const response = await axios.get("http://192.168.1.3:5000/getVendors");
-        setVendorData(response.data || "");
+        const vendorResponse = await axios.get(
+          "http://192.168.1.3:5000/getVendors"
+        );
+
+        const sellerResponse = await axios.get(
+          "http://192.168.1.3:5000/getSellers"
+        );
+
+        const brandResponse = await axios.get(
+          "http://192.168.1.3:5000/getBrands"
+        );
+
+        setVendorsData(vendorResponse.data || "");
+        setSellersData(sellerResponse.data || "");
+        setBrandsData(brandResponse.data || "");
       } catch (error) {
         console.error("Error fetching vendors:", error);
       }
     };
-    fetchVendors();
+    fetchDatas();
   }, []);
 
+  // Edit suada
   useEffect(() => {
     if (isEditMode && suadaToEdit) {
       setValue("suadaVendorName", suadaToEdit.vendorName);
@@ -116,22 +131,36 @@ function AddSuada() {
     </Typography>,
   ];
 
-  const suadaBrandName = watch("suadaBrandName");
-
   const selectedBrand =
-    brandsData.find((brand) => brand.id === suadaBrandName.value) ?? null;
+    brandsData.find((brand) => brand.id === suadaBrandName) ?? null;
 
-  const suadaSizes = watch("suadaSizes") || [];
+  let sizesData = [];
 
-  const sizesData = (selectedBrand?.sizes ?? []).map((size) => ({
-    label: size.label,
-    value: size.value,
-  }));
+  if (selectedBrand) {
+    let sizeOptions = [];
+
+    if (selectedBrand.category === "01b31a99-2422-4ee3-ac6c-a63934aecd53") {
+      // Cement ni category hoy to Cement Sizes
+      sizeOptions = CEMENTSIZESNAME;
+    } else if (
+      selectedBrand.category === "8b64b5f2-7f1a-4e47-b00a-18ff1126e6fb"
+    ) {
+      // Steal ni category hoy to Steal Sizes
+      sizeOptions = STEALSIZESNAME;
+    }
+
+    // Sizes to Label Convert Logic
+    sizesData = (selectedBrand.sizes ?? [])
+      .map((s) => {
+        const matched = sizeOptions.find((size) => size.value === s);
+        return matched ? { label: matched.label, value: matched.value } : null;
+      })
+      .filter(Boolean);
+  }
 
   const selectedSizes = sizesData.filter((size) =>
     (watch("suadaSizes") || []).includes(size.value)
   );
-
   const [inputData, setInputData] = useState({
     vendorRate: 0,
     sellerRate: 0,
@@ -147,42 +176,31 @@ function AddSuada() {
   const handleVendorSelect = (e) => {
     const selectedVendor = vendorsData.find((vendor) => vendor.id === e);
     if (selectedVendor) {
-      setValue("suadaVendorName", {
-        label: selectedVendor.name,
-        value: selectedVendor.id,
-      });
+      setValue("suadaVendorName", selectedVendor.id);
     }
   };
 
   const handleSellerSelect = (e) => {
     const selectedSeller = sellersData.find((seller) => seller.id === e);
     if (selectedSeller) {
-      setValue("suadaSellerName", {
-        label: selectedSeller.name,
-        value: selectedSeller.id,
-      });
+      setValue("suadaSellerName", selectedSeller.id);
     }
   };
 
   const handleBrandSelect = (e) => {
     const selectedBrands = brandsData.find((brand) => brand.id === e);
     if (selectedBrands) {
-      setValue("suadaBrandName", {});
+      setValue("suadaBrandName", selectedBrands.id);
     }
   };
 
-  const onsubmit = (data) => {
-    const sizes = (selectedBrand?.sizes || [])
-      .filter((s) => (suadaSizes || []).includes(s.value))
-      .map((s) => s.label);
-
-    const storeSuadaData = {
+  const onsubmit = async (data) => {
+    const storeSuadaDatass = {
       id: isEditMode ? id : uuidv4(),
       vendorName: data.suadaVendorName,
       sellerName: data.suadaSellerName,
       brandName: data.suadaBrandName,
       date: getValues("suadaDate"),
-      sizes: { name: sizes, value: data.suadaSizes },
       sizesData: data.sizesData,
       billNo: data.billNo,
       vendorRate: inputData.vendorRate,
@@ -192,13 +210,42 @@ function AddSuada() {
       totalSellerRate: inputData.totalSellerRate,
       status: data.status,
     };
+    console.log("storeSuadaDatass old", storeSuadaDatass);
 
-    if (isEditMode) {
-      dispatch(updateSuada(storeSuadaData));
-      dispatch(updateSuadaStatus({ id, status: data.status }));
-    } else {
-      dispatch(addSuadas(storeSuadaData));
+    const storeSuadaData = {
+      id: isEditMode ? id : uuidv4(),
+      vendorid: data.suadaVendorName,
+      sellerid: data.suadaSellerName,
+      brandid: data.suadaBrandName,
+      date: getValues("suadaDate"),
+      sizesData: data.sizesData,
+      billNo: data.billNo,
+      totalVendorRate: inputData.vendorRate,
+      totalSellerRate: inputData.sellerRate,
+      totalQty: inputData.totalQty,
+      totalVendorAmount: inputData.totalVendorRate,
+      totalSellerAmount: inputData.totalSellerRate,
+      status: data.status,
+    };
+    console.log("storeSuadaData", storeSuadaData);
+
+    try {
+      let response;
+      if (isEditMode) {
+        dispatch(updateSuada(storeSuadaDatass));
+        dispatch(updateSuadaStatus({ id, status: data.status }));
+      } else {
+        response = await axios.post(
+          "http://192.168.1.3:5000/addSuada",
+          storeSuadaData
+        );
+        console.log("response", response);
+        dispatch(addSuadas(storeSuadaDatass));
+      }
+    } catch (error) {
+      console.error("Error sending data to server:", error);
     }
+
     navigate("/dashboard");
   };
 
