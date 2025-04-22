@@ -167,10 +167,7 @@ function AddSuada() {
   const handleBrandSelect = (e) => {
     const selectedBrands = brandsData.find((brand) => brand.id === e);
     if (selectedBrands) {
-      setValue("suadaBrandName", {
-        label: selectedBrands.name,
-        value: selectedBrands.id,
-      });
+      setValue("suadaBrandName", {});
     }
   };
 
