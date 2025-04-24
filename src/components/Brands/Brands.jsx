@@ -10,6 +10,7 @@ function Brands() {
   const tableHeadingData = BRANDTABLEHEADINGDATA;
   const [tableData, setTableData] = useState([]);
 
+  // fetchBrands API
   useEffect(() => {
     const fetchBrands = async () => {
       try {
@@ -18,7 +19,6 @@ function Brands() {
           ...brand,
           type: "brand",
         }));
-        console.log("brands", brands);
 
         setTableData(brands);
       } catch (error) {
@@ -37,7 +37,7 @@ function Brands() {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => navigate("/brands/addBrand")}
-              className="fixed bottom-6 right-6 w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl shadow-lg z-10"
+              className="sm:static fixed bottom-6 right-6 w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl shadow-lg z-10"
             >
               +
             </button>

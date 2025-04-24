@@ -16,7 +16,6 @@ function SuadaCard({
   Date,
   Status,
 }) {
-
   const navigate = useNavigate();
   const edit = EDIT;
   const show = SHOW;

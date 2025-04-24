@@ -8,6 +8,8 @@ import axios from "axios";
 function Sellers() {
   const navigate = useNavigate();
   const [tableData, setTableData] = useState([]);
+
+  // fetchSellers API
   useEffect(() => {
     const fetchSellers = async () => {
       try {
@@ -33,7 +35,7 @@ function Sellers() {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => navigate("/sellers/addSeller")}
-              className="fixed bottom-6 right-6 w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl shadow-lg z-10"
+              className="sm:static fixed bottom-6 right-6 w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl shadow-lg z-10"
             >
               +
             </button>

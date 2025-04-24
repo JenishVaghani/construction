@@ -23,7 +23,9 @@ function AddSeller() {
   const { id } = useParams();
   const isEditMode = !!id;
   const [getSellers, setGetSellers] = useState();
+  const [responseMessage, setResponseMessage] = useState();
 
+  // fetching seller API
   useEffect(() => {
     const fetchSellers = async () => {
       try {
@@ -71,8 +73,7 @@ function AddSeller() {
       email: data.sellerEmail,
       phone: data.sellerPhone,
     };
-    console.log("storeSellerData", storeSellerData);
-    
+
     try {
       let response;
       if (isEditMode) {
@@ -80,19 +81,21 @@ function AddSeller() {
           "http://192.168.1.3:5000/updataSeller",
           storeSellerData
         );
-        console.log("response updated", response);
       } else {
         response = await axios.post(
           "http://192.168.1.3:5000/addSeller",
           storeSellerData
         );
-        console.log("response", response);
       }
+      setResponseMessage(response.data.Message);
+      navigate("/sellers");
     } catch (error) {
       console.error("Error sending data to server:", error);
-    }
 
-    navigate("/sellers");
+      if (error.response && error.response.status === 409) {
+        setResponseMessage(error.response.data.Message);
+      }
+    }
   };
 
   return (
@@ -118,8 +121,10 @@ function AddSeller() {
                   },
                 })}
               />
-              {errors.sellerName && (
-                <p className="text-red-500">{errors.sellerName.message}</p>
+              {(errors.sellerName || responseMessage) && (
+                <p className="text-red-500">
+                  {errors.sellerName?.message || responseMessage}
+                </p>
               )}
             </div>
             <div className="mb-4">

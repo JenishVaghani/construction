@@ -6,10 +6,10 @@ import MultiSelectDropDownField from "../MUIComponents/MultiSelectDropDownField"
 import StealInput from "./StealInput";
 import CementInput from "./CementInput";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import DateField from "../MUIComponents/DateField";
 import { useForm, FormProvider, Controller } from "react-hook-form";
-import { addSuadas, updateSuada, updateSuadaStatus } from "../Redux/UserSlice";
+import { updateSuadaStatus } from "../Redux/UserSlice";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { CEMENTSIZESNAME, STEALSIZESNAME } from "../../utils/constants";
@@ -17,14 +17,14 @@ import { CEMENTSIZESNAME, STEALSIZESNAME } from "../../utils/constants";
 function AddSuada() {
   const methods = useForm({
     defaultValues: {
-      suadaVendorName: [],
+      suadaVendorName: "",
       suadaDate: "",
-      suadaSellerName: [],
-      suadaBrandName: [],
+      suadaSellerName: "",
+      suadaBrandName: "",
       suadaSizes: [],
       vendorRate: 0,
-      sellerRate: [],
-      qty: [],
+      sellerRate: 0,
+      qty: 0,
       totalQty: 0,
       totalVendorRate: 0,
       totalSellerRate: 0,
@@ -49,16 +49,16 @@ function AddSuada() {
   const [vendorsData, setVendorsData] = useState([]);
   const [sellersData, setSellersData] = useState([]);
   const [brandsData, setBrandsData] = useState([]);
+  const [suadas, setSuadas] = useState([]);
   const searchParams = new URLSearchParams(location.search);
   const isReadOnly = searchParams.get("mode") === "view";
-
   const { id } = useParams();
   const isEditMode = !!id;
-  const suadas = useSelector((state) => state.users.suadas);
   const suadaToEdit = isEditMode
     ? suadas.find((suada) => suada.id === id)
     : null;
-  const suadaBrandName = watch("suadaBrandName");
+
+  // vendor, seller and brand fetch API
   useEffect(() => {
     const fetchDatas = async () => {
       try {
@@ -87,34 +87,81 @@ function AddSuada() {
   // Edit suada
   useEffect(() => {
     if (isEditMode && suadaToEdit) {
-      setValue("suadaVendorName", suadaToEdit.vendorName);
+      setValue("suadaVendorName", suadaToEdit.vendorid);
+      setValue("suadaSellerName", suadaToEdit.sellerid);
+      setValue("suadaBrandName", suadaToEdit.brandid);
       setValue("suadaDate", suadaToEdit.date);
-      setValue("suadaSellerName", suadaToEdit.sellerName);
-      setValue("suadaBrandName", suadaToEdit.brandName);
-      setValue(
-        "suadaSizes",
-        suadaToEdit.sizes.value.map((s) => s)
-      );
-
       setValue("billNo", suadaToEdit.billNo);
       setValue("status", suadaToEdit.status);
-      if (suadaToEdit.sizesData) {
-        const categoryName = suadaToEdit.sizes.name.map((s) => s);
-        const categoryObj = suadaToEdit.sizesData;
 
-        categoryName.forEach((size) => {
-          const vendorRate = categoryObj[size]?.vendorRate || 0;
-          const sellerRate = categoryObj[size]?.sellerRate || 0;
-          const qty = categoryObj[size]?.qty || 0;
-          const moneyType = categoryObj[size]?.moneyType || 0;
-          setValue(`sizesData.${size}.vendorRate`, vendorRate);
-          setValue(`sizesData.${size}.sellerRate`, sellerRate);
-          setValue(`sizesData.${size}.qty`, qty);
-          setValue(`sizesData.${size}.moneyType`, moneyType);
+      if (suadaToEdit.sizesData) {
+        const sizeIds = Object.keys(suadaToEdit.sizesData);
+
+        const ALL_SIZES = [...CEMENTSIZESNAME, ...STEALSIZESNAME];
+
+        const matchedSizes = sizeIds.map((id) => {
+          const matched = ALL_SIZES.find((item) => item.value === id);
+          return matched.value;
+        });
+        setValue("suadaSizes", matchedSizes);
+
+        sizeIds.forEach((sizeId) => {
+          const sizeDetails = suadaToEdit?.sizesData[sizeId];
+          console.log("sizeDetails", sizeDetails);
+
+          const vendorRate = sizeDetails.vendorRate || 0;
+          const sellerRate = sizeDetails?.sellerRate || 0;
+          const qty = sizeDetails?.qty || 0;
+          const moneyType = sizeDetails?.moneyType || "";
+
+          setValue(`sizesData.${sizeId}.vendorRate`, vendorRate);
+          setValue(`sizesData.${sizeId}.sellerRate`, sellerRate);
+          setValue(`sizesData.${sizeId}.qty`, qty);
+          setValue(`sizesData.${sizeId}.moneyType`, moneyType);
         });
       }
     }
   }, [isEditMode, suadaToEdit, setValue]);
+
+  // edit in size reselect to data show
+  useEffect(() => {
+    const selected = watch("suadaSizes") || [];
+
+    if (selected.length && suadaToEdit?.sizesData) {
+      selected.forEach((sizeId) => {
+        const sizeDetails = suadaToEdit.sizesData[sizeId];
+        if (sizeDetails) {
+          setValue(
+            `sizesData.${sizeId}.vendorRate`,
+            sizeDetails.vendorRate || 0
+          );
+          setValue(
+            `sizesData.${sizeId}.sellerRate`,
+            sizeDetails.sellerRate || 0
+          );
+          setValue(`sizesData.${sizeId}.qty`, sizeDetails.qty || 0);
+          setValue(
+            `sizesData.${sizeId}.moneyType`,
+            sizeDetails.moneyType || ""
+          );
+        }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch("suadaSizes")]);
+
+  // suada fetch API
+  useEffect(() => {
+    try {
+      const fetchSuadas = async () => {
+        const response = await axios.get("http://192.168.1.3:5000/getSuadas");
+        setSuadas(response.data.Data || "");
+      };
+      fetchSuadas();
+    } catch (error) {
+      console.error("Error fetching suadas:", error);
+    }
+  }, []);
 
   const addSuadaPath = [
     <Link
@@ -131,6 +178,7 @@ function AddSuada() {
     </Typography>,
   ];
 
+  const suadaBrandName = watch("suadaBrandName");
   const selectedBrand =
     brandsData.find((brand) => brand.id === suadaBrandName) ?? null;
 
@@ -149,7 +197,7 @@ function AddSuada() {
       sizeOptions = STEALSIZESNAME;
     }
 
-    // Sizes to Label Convert Logic
+    // Sizes to Label Convert
     sizesData = (selectedBrand.sizes ?? [])
       .map((s) => {
         const matched = sizeOptions.find((size) => size.value === s);
@@ -157,10 +205,11 @@ function AddSuada() {
       })
       .filter(Boolean);
   }
-
   const selectedSizes = sizesData.filter((size) =>
     (watch("suadaSizes") || []).includes(size.value)
   );
+  console.log("selectedSizes", selectedSizes);
+
   const [inputData, setInputData] = useState({
     vendorRate: 0,
     sellerRate: 0,
@@ -195,23 +244,6 @@ function AddSuada() {
   };
 
   const onsubmit = async (data) => {
-    const storeSuadaDatass = {
-      id: isEditMode ? id : uuidv4(),
-      vendorName: data.suadaVendorName,
-      sellerName: data.suadaSellerName,
-      brandName: data.suadaBrandName,
-      date: getValues("suadaDate"),
-      sizesData: data.sizesData,
-      billNo: data.billNo,
-      vendorRate: inputData.vendorRate,
-      sellerRate: inputData.sellerRate,
-      totalQty: inputData.totalQty,
-      totalVendorRate: inputData.totalVendorRate,
-      totalSellerRate: inputData.totalSellerRate,
-      status: data.status,
-    };
-    console.log("storeSuadaDatass old", storeSuadaDatass);
-
     const storeSuadaData = {
       id: isEditMode ? id : uuidv4(),
       vendorid: data.suadaVendorName,
@@ -227,20 +259,23 @@ function AddSuada() {
       totalSellerAmount: inputData.totalSellerRate,
       status: data.status,
     };
-    console.log("storeSuadaData", storeSuadaData);
-
+    console.log("storeSuadaData**", storeSuadaData);
+    
     try {
       let response;
       if (isEditMode) {
-        dispatch(updateSuada(storeSuadaDatass));
+        response = await axios.put(
+          "http://192.168.1.3:5000/updateSuada",
+          storeSuadaData
+        );
+        console.log("update**response", response);
         dispatch(updateSuadaStatus({ id, status: data.status }));
       } else {
         response = await axios.post(
           "http://192.168.1.3:5000/addSuada",
           storeSuadaData
         );
-        console.log("response", response);
-        dispatch(addSuadas(storeSuadaDatass));
+        console.log("post**response", response);
       }
     } catch (error) {
       console.error("Error sending data to server:", error);
@@ -248,6 +283,8 @@ function AddSuada() {
 
     navigate("/dashboard");
   };
+  console.log("0000", watch("suadaBrandName"));
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -269,7 +306,7 @@ function AddSuada() {
                       label: e.name,
                       value: e.id,
                     }))}
-                    value={watch("suadaVendorName")?.value || ""}
+                    value={watch("suadaVendorName") || ""}
                     title="Vendor"
                     {...register("suadaVendorName", {
                       required: "Vendor is required",
@@ -314,7 +351,7 @@ function AddSuada() {
                     label: e.name,
                     value: e.id,
                   }))}
-                  value={watch("suadaSellerName")?.value || ""}
+                  value={watch("suadaSellerName") || ""}
                   title="Seller"
                   {...register("suadaSellerName", {
                     required: "Seller is required",
@@ -336,7 +373,7 @@ function AddSuada() {
                     label: e.name,
                     value: e.id,
                   }))}
-                  value={watch("suadaBrandName")?.value || ""}
+                  value={watch("suadaBrandName") || ""}
                   title="Brand"
                   {...register("suadaBrandName", {
                     required: "Brand is required",

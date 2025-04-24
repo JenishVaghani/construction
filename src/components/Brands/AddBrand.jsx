@@ -28,6 +28,7 @@ function AddBrand() {
     },
   });
   const [getBrands, setGetBrands] = useState();
+  const [responseMessage, setResponseMessage] = useState();
   const navigate = useNavigate();
   const brandCategorys = BRANDCATEGORYS;
   const cementSizes = CEMENTSIZESNAME;
@@ -35,6 +36,7 @@ function AddBrand() {
   const { id } = useParams();
   const isEditMode = !!id;
 
+  // fetchBrands API
   useEffect(() => {
     const fetchBrands = async () => {
       try {
@@ -143,8 +145,6 @@ function AddBrand() {
       category: data.brandCategory.value,
       sizes: data.brandSizes.map((index) => index.value),
     };
-    console.log("storeBrandData", storeBrandData);
-
     // Post API to Brand
     try {
       let response;
@@ -153,19 +153,20 @@ function AddBrand() {
           "http://192.168.1.3:5000/updateBrand",
           storeBrandData
         );
-        console.log("API update Response:", response.data);
       } else {
         response = await axios.post(
           "http://192.168.1.3:5000/addBrand",
           storeBrandData
         );
-        console.log("API add Response:", response.data);
       }
+      setResponseMessage(response.data.Message);
+      navigate("/brands");
     } catch (error) {
       console.error("Error sending data to server", error);
+      if (error.response && error.response.status === 409) {
+        setResponseMessage(error.response.data.Message);
+      }
     }
-
-    navigate("/brands");
   };
 
   return (
@@ -187,8 +188,10 @@ function AddBrand() {
                   required: "Brand Name is required",
                 })}
               />
-              {errors.brandName && (
-                <p className="text-red-500">{errors.brandName.message}</p>
+              {(errors.brandName || responseMessage) && (
+                <p className="text-red-500">
+                  {errors.brandName?.message || responseMessage}
+                </p>
               )}
             </div>
             <div className="mb-4">

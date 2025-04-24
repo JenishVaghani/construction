@@ -20,10 +20,12 @@ function AddVendor() {
     },
   });
   const [getVendors, setGetVendors] = useState();
+  const [responseMessage, setResponseMessage] = useState();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
 
+  // vendor fetch API
   useEffect(() => {
     const fetchVendors = async () => {
       try {
@@ -71,7 +73,6 @@ function AddVendor() {
       email: data.vendorEmail,
       phone: data.vendorPhone,
     };
-    console.log("storeVendorData", storeVendorData);
     try {
       let response;
       if (isEditMode) {
@@ -79,18 +80,21 @@ function AddVendor() {
           "http://192.168.1.3:5000/updateVendor",
           storeVendorData
         );
-        console.log("response updated", response);
       } else {
         response = await axios.post(
           "http://192.168.1.3:5000/addVendor",
           storeVendorData
         );
-        console.log("response", response);
       }
+      setResponseMessage(response.data.Message);
+      navigate("/vendors");
     } catch (error) {
       console.error("Error sending data to server", error);
+
+      if (error.response && error.response.status === 409) {
+        setResponseMessage(error.response.data.Message);
+      }
     }
-    navigate("/vendors");
   };
 
   return (
@@ -116,8 +120,10 @@ function AddVendor() {
                   },
                 })}
               />
-              {errors.vendorName && (
-                <p className="text-red-500">{errors.vendorName.message}</p>
+              {(errors.vendorName || responseMessage) && (
+                <p className="text-red-500">
+                  {errors.vendorName?.message || responseMessage}
+                </p>
               )}
             </div>
             <div className="mb-4">

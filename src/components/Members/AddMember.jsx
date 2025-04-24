@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Breadcrumbs, Typography } from "@mui/material";
 import InputField from "../MUIComponents/InputField";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -22,6 +22,7 @@ function AddMember() {
       memberPassword: "",
     },
   });
+  const [responseMessage, setResponseMessage] = useState();
   const navigate = useNavigate();
   const { userid } = useParams();
   const isEditMode = !!userid;
@@ -39,6 +40,8 @@ function AddMember() {
       {isEditMode ? "Edit Member" : "Add Member"}
     </Typography>,
   ];
+
+  // fetchMember API
   useEffect(() => {
     const fetchMember = async () => {
       if (isEditMode) {
@@ -80,8 +83,6 @@ function AddMember() {
       password: data.memberPassword,
       isAdmin: false,
     };
-    console.log("storeMemberData = ", storeMemberData);
-
     try {
       let response;
       if (isEditMode) {
@@ -98,10 +99,14 @@ function AddMember() {
         );
       }
 
-      console.log("API Response:", response.data);
+      setResponseMessage(response.data.Message);
       navigate("/members");
     } catch (error) {
       console.error("Error sending data to server", error);
+      
+      if (error.response && error.response.status === 409) {
+        setResponseMessage(error.response.data.Message);
+      } 
     }
   };
 
@@ -113,7 +118,6 @@ function AddMember() {
             {showAddMemberUrl}
           </Breadcrumbs>
         </div>
-
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mt-4">
             <div className="mb-4">
@@ -128,8 +132,10 @@ function AddMember() {
                   },
                 })}
               />
-              {errors.memberName && (
-                <p className="text-red-500">{errors.memberName.message}</p>
+              {(errors.memberName || responseMessage) && (
+                <p className="text-red-500">
+                  {errors.memberName?.message || responseMessage}
+                </p>
               )}
             </div>
             <div className="mb-4">

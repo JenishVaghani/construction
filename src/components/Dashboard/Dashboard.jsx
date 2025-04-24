@@ -4,19 +4,21 @@ import SuadaCard from "./SuadaCard";
 import { useNavigate } from "react-router-dom";
 import DropDownField from "../MUIComponents/DropDownField";
 import DateField from "../MUIComponents/DateField";
-import { useSelector } from "react-redux";
 import { FILTER, DOWNLOAD } from "../../utils/constants";
 import { Controller, useForm } from "react-hook-form";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import axios from "axios";
 
 function Dashboard({ isSidebarOpen }) {
-  const brands = useSelector((state) => state.users.brands);
+  const [suadas, setSuadas] = useState([]);
   const brandOptions = [
-    { label: "All", value: "all" }, // Default option
-    ...brands.map((brand) => ({
-      label: brand.name,
-      value: brand.id,
+    { label: "All", value: "all" },
+    ...Array.from(
+      new Map(suadas.map((suada) => [suada.brandid, suada])).values()
+    ).map((suada) => ({
+      value: suada.brandid,
+      label: suada.brandName,
       search: "",
     })),
   ];
@@ -32,7 +34,19 @@ function Dashboard({ isSidebarOpen }) {
   const navigate = useNavigate();
   const filter = FILTER;
   const download = DOWNLOAD;
-  const suadas = useSelector((state) => state.users.suadas);
+
+  // fetchSuadas API
+  useEffect(() => {
+    const fetchSuadas = async () => {
+      try {
+        const response = await axios.get("http://192.168.1.3:5000/getSuadas");
+        setSuadas(response.data.Data);
+      } catch (error) {
+        console.error("Error fetching suadas:", error);
+      }
+    };
+    fetchSuadas();
+  }, []);
   const [isFilterModal, setIsFilterModal] = useState(false);
 
   useEffect(() => {
@@ -43,26 +57,31 @@ function Dashboard({ isSidebarOpen }) {
   }, [isSidebarOpen]);
 
   // Filter logic
-  const filteredSuadas = suadas.filter((item) => {
-    const selectedBrand = watch("brandFilter");
-    const startDate = getValues("startDate");
-    const endDate = getValues("endDate");
-    const itemDate = item.date;
-    const searchQuery = watch("search")?.toLowerCase() || "";
-    const isWithinDateRange =
-      !startDate || !endDate || (itemDate >= startDate && itemDate <= endDate);
+  const filteredSuadas = suadas
+    .filter((item) => {
+      const selectedBrand = watch("brandFilter");
+      const startDate = getValues("startDate");
+      const endDate = getValues("endDate");
+      const itemDate = item.date;
+      const searchQuery = watch("search")?.toLowerCase() || "";
+      const isWithinDateRange =
+        !startDate ||
+        !endDate ||
+        (itemDate >= startDate && itemDate <= endDate);
 
-    const isMatchingBrand =
-      selectedBrand === "all" || item.brandName.value === watch("brandFilter");
+      const isMatchingBrand =
+        selectedBrand === "all" || item.brandid === watch("brandFilter");
+      console.log("brandid", item.brandid);
 
-    const isMatchingSearch =
-      searchQuery === "" ||
-      item.vendorName.label.toLowerCase().includes(searchQuery) ||
-      item.sellerName.label.toLowerCase().includes(searchQuery) ||
-      item.billNo.toLowerCase().includes(searchQuery);
+      const isMatchingSearch =
+        searchQuery === "" ||
+        item.vendorName.toLowerCase().includes(searchQuery) ||
+        item.sellerName.toLowerCase().includes(searchQuery) ||
+        item.billNo.toLowerCase().includes(searchQuery);
 
-    return isMatchingBrand && isWithinDateRange && isMatchingSearch;
-  });
+      return isMatchingBrand && isWithinDateRange && isMatchingSearch;
+    })
+    .sort((a, b) => a.index_id - b.index_id);
 
   // Handle Apply Filter
   const handleApplyFilter = () => {
@@ -160,7 +179,7 @@ function Dashboard({ isSidebarOpen }) {
         <div className="p-4 ">
           <div className="hidden lg:block">
             <div className="flex lg:flex-wrap items-center gap-2">
-              {/* Filter */}
+              {/* Filter brand */}
               <div className="flex items-center space-x-2">
                 <label className="text-lg font-medium">Filter:</label>
                 <DropDownField
@@ -254,7 +273,7 @@ function Dashboard({ isSidebarOpen }) {
                   onChange={(e) => setValue("brandFilter", e)}
                 />
 
-                {/* Date Picker */}
+                {/* Date Picker start-date */}
                 <Controller
                   name="startDate"
                   control={control}
@@ -267,6 +286,7 @@ function Dashboard({ isSidebarOpen }) {
                   )}
                 />
 
+                {/* Date Picker end-date */}
                 <Controller
                   name="endDate"
                   control={control}
@@ -291,13 +311,17 @@ function Dashboard({ isSidebarOpen }) {
                     />
                   </label>
                 </div>
+
                 <div className="fixed bottom-4 left-0 right-0  p-4 flex justify-between sm:justify-center gap-2">
+                  {/* Cancel button */}
                   <button
                     className="w-full sm:w-62 bg-gray-500 text-white px-3 py-2 rounded-md hover:bg-gray-600 cursor-pointer"
                     onClick={handleCancleFilter}
                   >
                     Cancel
                   </button>
+
+                  {/* Apply button */}
                   <button
                     type="submit"
                     onClick={handleApplyFilter}
@@ -310,10 +334,11 @@ function Dashboard({ isSidebarOpen }) {
             )}
           </div>
 
+          {/* Add suada button (+) */}
           <div className="flex items-center space-x-3 mt-4 rounded-lg">
             <button
               onClick={() => navigate("/dashboard/addSuada")}
-              className="fixed bottom-6 right-6 w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl shadow-lg z-10"
+              className="sm:static fixed bottom-6 right-6 w-12 h-12 flex items-center justify-center cursor-pointer bg-[#15616D] text-white hover:bg-[#0E4A52] rounded-full text-2xl shadow-lg z-10"
             >
               +
             </button>
@@ -323,19 +348,20 @@ function Dashboard({ isSidebarOpen }) {
             </label>
           </div>
 
+          {/* SuadaCard */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
             {filteredSuadas.length > 0 ? (
               filteredSuadas.map((item, index) => (
                 <SuadaCard
                   key={index}
                   id={item.id}
-                  Vname={item.vendorName.label}
-                  Sname={item.sellerName.label}
+                  Vname={item.vendorName}
+                  Sname={item.sellerName}
                   TotalQty={item.totalQty}
-                  TotalVRate={item.totalVendorRate}
-                  TotalSRate={item.totalSellerRate}
+                  TotalVRate={item.totalVendorAmount}
+                  TotalSRate={item.totalSellerAmount}
                   Billno={item.billNo}
-                  Brand={item.brandName.label}
+                  Brand={item.brandName}
                   Date={item.date}
                   Status={item.status}
                 />
