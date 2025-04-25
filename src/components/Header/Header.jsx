@@ -1,8 +1,9 @@
 import React from "react";
-import { PROFILE, LISTOPEN } from "../../utils/constants";
+import { LISTOPEN } from "../../utils/constants";
 
 function Header({ toggleSidebar }) {
-  const profile = PROFILE;
+  const user = localStorage.getItem("user");
+  const capitalLetter = user?.charAt(0).toUpperCase();
   const listOpen = LISTOPEN;
 
   return (
@@ -14,7 +15,7 @@ function Header({ toggleSidebar }) {
           className="object-contain w-8 h-8 rounded-md cursor-pointer block sm:hidden"
           onClick={toggleSidebar}
         />
-      </div>
+      </div>  
 
       {/* Title (Centered) */}
       <h1 className="text-md sm:text-lg lg:text-lg  font-semibold tracking-wide flex-1 text-center">
@@ -24,15 +25,15 @@ function Header({ toggleSidebar }) {
       {/* Profile Section (Aligned to End / Right) */}
       <div className="flex items-center space-x-3">
         <span className="text-md sm:text-lg lg:text-lg font-medium hidden sm:block lg:block">
-          {profile.name}
+          {user?? "Welcome"}
         </span>
-        <button>
-          <img
-            src={profile.img}
-            alt={profile.name}
-            className="w-12 h-12 rounded-full border-2 border-gray-500 shadow-md "
-          />
-        </button>
+        <div className="relative w-11 h-11">
+          <button className="w-full h-full rounded-full border-2 border-gray-500 shadow-md bg-yellow-600 text-white flex items-center justify-center font-bold text-xl">
+            {capitalLetter??"W"}
+          </button>
+          {/* Green Dot */}
+          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400  rounded-full"></span>
+        </div>
       </div>
     </div>
   );

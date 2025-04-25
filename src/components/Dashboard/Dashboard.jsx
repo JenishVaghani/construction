@@ -36,15 +36,15 @@ function Dashboard({ isSidebarOpen }) {
   const download = DOWNLOAD;
 
   // fetchSuadas API
+  const fetchSuadas = async () => {
+    try {
+      const response = await axios.get("http://192.168.1.3:5000/getSuadas");
+      setSuadas(response.data.Data);
+    } catch (error) {
+      console.error("Error fetching suadas:", error);
+    }
+  };
   useEffect(() => {
-    const fetchSuadas = async () => {
-      try {
-        const response = await axios.get("http://192.168.1.3:5000/getSuadas");
-        setSuadas(response.data.Data);
-      } catch (error) {
-        console.error("Error fetching suadas:", error);
-      }
-    };
     fetchSuadas();
   }, []);
   const [isFilterModal, setIsFilterModal] = useState(false);
@@ -71,7 +71,6 @@ function Dashboard({ isSidebarOpen }) {
 
       const isMatchingBrand =
         selectedBrand === "all" || item.brandid === watch("brandFilter");
-      console.log("brandid", item.brandid);
 
       const isMatchingSearch =
         searchQuery === "" ||
@@ -106,7 +105,8 @@ function Dashboard({ isSidebarOpen }) {
       unit: "mm",
       format: "a4",
     });
-    doc.text("Jenish Vaghani(Suada Report)", 10, 12);
+    const user = localStorage.getItem("user");
+    doc.text(`${user}(Suada Report)`, 10, 12);
 
     const tableColumn = [
       "Index",
@@ -114,8 +114,8 @@ function Dashboard({ isSidebarOpen }) {
       "Vendor Name",
       "Seller Name",
       "Total Qty",
-      "Vendor Rate",
-      "Seller Rate",
+      "Vendor Amount",
+      "Seller Amount",
       "Bill No",
       "Brand",
       "Date",
@@ -127,13 +127,13 @@ function Dashboard({ isSidebarOpen }) {
       const rowData = [
         index + 1,
         item.id,
-        item.vendorName.label,
-        item.sellerName.label,
+        item.vendorName,
+        item.sellerName,
         item.totalQty,
-        item.totalVendorRate,
-        item.totalSellerRate,
+        item.totalVendorAmount,
+        item.totalSellerAmount,
         item.billNo,
-        item.brandName.label,
+        item.brandName,
         item.date,
         item.status,
       ];
@@ -188,7 +188,7 @@ function Dashboard({ isSidebarOpen }) {
                   value={watch("brandFilter")}
                   {...register("brandFilter")}
                   onChange={(e) => setValue("brandFilter", e)}
-                  myStyle="lg:w-56"
+                  myStyle="lg:w-50"
                 />
               </div>
 
@@ -202,7 +202,7 @@ function Dashboard({ isSidebarOpen }) {
                       label="Start-Date"
                       date={field.onChange}
                       value={watch("startDate")}
-                      myStyle="lg:w-56"
+                      myStyle="lg:w-50"
                     />
                   )}
                 />
@@ -214,7 +214,7 @@ function Dashboard({ isSidebarOpen }) {
                       label="End-Date"
                       date={field.onChange}
                       value={watch("endDate")}
-                      myStyle="lg:w-56"
+                      myStyle="lg:w-50"
                     />
                   )}
                 />
@@ -222,7 +222,7 @@ function Dashboard({ isSidebarOpen }) {
 
               {/* Search - Takes Full Width in Between */}
               <div className="flex-grow flex items-center space-x-2 ">
-                <label className="flex items-center border border-gray-300 px-3 py-2 bg-white rounded-lg w-52 lg:w-40 2xl:w-52 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 hover:border-gray-800">
+                <label className="flex items-center border border-gray-300 px-3 py-2 bg-white rounded-lg w-48 lg:w-38 2xl:w-52 focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 hover:border-gray-800">
                   <FaSearch className="text-gray-500 mr-1 text-sm" />
                   <input
                     type="text"
@@ -236,7 +236,7 @@ function Dashboard({ isSidebarOpen }) {
               {/* Download PDF Button - Stays on the Right */}
               <button
                 onClick={handleDownloadPDF}
-                className="bg-[#15616D] text-white px-3 py-2 text-sm rounded-md hover:bg-[#0E4A52] cursor-pointer"
+                className="flex bg-[#15616D] text-white px-3 py-2 text-sm rounded-md hover:bg-[#0E4A52] cursor-pointer"
               >
                 Download PDF
               </button>
@@ -364,6 +364,7 @@ function Dashboard({ isSidebarOpen }) {
                   Brand={item.brandName}
                   Date={item.date}
                   Status={item.status}
+                  onStatusChange={fetchSuadas}
                 />
               ))
             ) : (

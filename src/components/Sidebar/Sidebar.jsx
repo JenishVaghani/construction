@@ -3,7 +3,6 @@ import { SIDEDETAILS, TEQNODUX } from "../../utils/constants";
 import { useNavigate, useLocation } from "react-router-dom";
 
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
-
   const teqnodux = TEQNODUX;
   const sideDetails = SIDEDETAILS;
   const navigate = useNavigate();
@@ -34,6 +33,13 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
     };
   }, [isSidebarOpen, toggleSidebar]);
 
+  const isAdmin = 0;
+
+  const filteredSideDetails = isAdmin
+    ? sideDetails
+    : sideDetails.filter((item) => item.name === "dashboard");
+  console.log("filteredSideDetails", filteredSideDetails);
+
   return (
     <>
       <div
@@ -60,7 +66,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
 
         {/* Sidebar Details */}
         <div className="space-y-1">
-          {sideDetails.map((item, index) => (
+          {filteredSideDetails.map((item, index) => (
             <div
               key={index}
               onClick={() => navigate(`/${item.name}`)}

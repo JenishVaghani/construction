@@ -5,7 +5,6 @@ import Members from "./components/Members/Members";
 import Brands from "./components/Brands/Brands";
 import Vendors from "./components/Vendors/Vendors";
 import Sellers from "./components/Sellers/Sellers";
-import Settings from "./components/Settings/Settings";
 import AddSuada from "./components/Dashboard/AddSuada";
 import AddMember from "./components/Members/AddMember";
 import AddBrand from "./components/Brands/AddBrand";
@@ -44,8 +43,6 @@ function App() {
                     <Route path="/brands" element={<Brands />} />
                     <Route path="/vendors" element={<Vendors />} />
                     <Route path="/sellers" element={<Sellers />} />
-                    <Route path="/settings" element={<Settings />} />
-
                     {/* Add Page Section */}
                     <Route path="/members/addMember" element={<AddMember />} />
                     <Route path="/brands/addBrand" element={<AddBrand />} />

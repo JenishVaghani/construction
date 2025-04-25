@@ -3,26 +3,25 @@ import Dashboard from "./images/dashboard.png";
 import Members from "./images/members.png";
 import Brands from "./images/brands.png";
 import Sellers from "./images/sellers.png";
-import Settings from "./images/settings.png";
-import Profile from "./images/jenish.png";
 import Edit from "./images/edit.png";
 import Show from "./images/show.png";
 import Vendors from "./images/vendors.png";
 import Delete from "./images/delete.png";
 import ListOpen from "./images/listOpen.png";
 import Filter from "./images/filter.png";
-import Download from "./images/download.png"
-import Image404 from "./images/404.png"
+import Download from "./images/download.png";
+import Image404 from "./images/404.png";
+import Construction from "./images/construction.png";
 
 export const TEQNODUX = { img: Teqnodux, name: "teqnodux" };
-export const PROFILE = { img: Profile, name: "Jenish Vaghani" };
 export const EDIT = { img: Edit, name: "edit" };
 export const SHOW = { img: Show, name: "show" };
 export const DELETE = { img: Delete, name: "Delete" };
 export const LISTOPEN = { img: ListOpen, name: "List Open" };
 export const FILTER = { img: Filter, name: "Filter" };
-export const DOWNLOAD = {img: Download, name: "Download"}
-export const IMAGE404 = {img: Image404, name: "Image404"}
+export const DOWNLOAD = { img: Download, name: "Download" };
+export const IMAGE404 = { img: Image404, name: "Image404" };
+export const CONSTRUCTION = { img: Construction, name: "Construction" };
 
 export const SIDEDETAILS = [
   { img: Dashboard, name: "dashboard", title: "Dashboard" },
@@ -30,7 +29,6 @@ export const SIDEDETAILS = [
   { img: Brands, name: "brands", title: "Brands" },
   { img: Vendors, name: "vendors", title: "Vendors" },
   { img: Sellers, name: "sellers", title: "Sellers" },
-  { img: Settings, name: "settings", title: "Settings" },
 ];
 
 export const BRANDCATEGORYS = [

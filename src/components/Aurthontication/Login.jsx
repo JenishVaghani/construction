@@ -2,11 +2,13 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { TEQNODUX, CONSTRUCTION } from "../../utils/constants";
 
 export default function Login() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -16,6 +18,8 @@ export default function Login() {
   });
 
   const [errorMessage, setErrorMessage] = useState();
+  const teqnodux = TEQNODUX;
+  const construction = CONSTRUCTION;
 
   const navigate = useNavigate();
 
@@ -33,7 +37,7 @@ export default function Login() {
       console.log("Response = ", response);
 
       if (response.status === 200) {
-        localStorage.setItem("user", response.data.message);
+        localStorage.setItem("user", watch("username"));
         navigate("/dashboard");
       }
     } catch (error) {
@@ -48,14 +52,50 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 className="text-2xl font-bold text-[#15616D] text-center mb-6">
-          Login
-        </h2>
+    <div
+      className="flex justify-center items-center min-h-screen bg-cover bg-center relative"
+      style={{
+        backgroundImage: `url(${construction.img})`,
+      }}
+    >
+      {/* Overlay for dark effect */}
+      <div className="absolute inset-0 bg-[#00000080] z-0" />
+
+      {/* Login Box */}
+      <div className="bg-white p-8 rounded-xl shadow-xl w-[400px] relative z-10">
+        {/* Login Heading */}
+        <div className="relative flex items-center justify-center mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#15616D]"></div>
+          </div>
+          <div className="relative px-4 bg-white  text-[#15616D] text-3xl font-bold">
+            Login
+          </div>
+        </div>
+
+        {/* LOGO & BRANDING */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="flex items-center space-x-3">
+            <img
+              src={teqnodux.img}
+              alt={teqnodux.name}
+              className="h-12 w-12 object-contain"
+            />
+            <div>
+              <h1 className="text-xl font-semibold text-[#0E4A52]">
+                Constructions
+              </h1>
+              <span className="text-md text-[#0E4A52]">Teqnodux</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Error Message */}
         {errorMessage && (
           <p className="text-red-500 text-center mb-4">{errorMessage}</p>
         )}
+
+        {/* Login Form */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
@@ -70,8 +110,9 @@ export default function Login() {
             })}
           />
           {errors.username && (
-            <p className="text-red-500">{errors.username.message}</p>
+            <p className="text-red-500 text-sm">{errors.username.message}</p>
           )}
+
           <input
             type="password"
             placeholder="Password"
@@ -81,11 +122,12 @@ export default function Login() {
             })}
           />
           {errors.password && (
-            <p className="text-red-500">{errors.password.message}</p>
+            <p className="text-red-500 text-sm">{errors.password.message}</p>
           )}
+
           <button
             type="submit"
-            className="w-full bg-[#15616D] text-white p-2 mt-4 rounded-lg hover:bg-[#0E4A52] cursor-pointer"
+            className="w-full bg-[#15616D] text-white p-2 mt-4 rounded-lg hover:bg-[#0E4A52] transition-colors duration-200 cursor-pointer"
           >
             Login
           </button>

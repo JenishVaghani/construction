@@ -1,8 +1,7 @@
 import React from "react";
 import { EDIT, SHOW } from "../../utils/constants";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { updateSuadaStatus } from "../Redux/UserSlice";
+import axios from "axios";
 
 function SuadaCard({
   id,
@@ -15,6 +14,7 @@ function SuadaCard({
   Brand,
   Date,
   Status,
+  onStatusChange,
 }) {
   const navigate = useNavigate();
   const edit = EDIT;
@@ -22,15 +22,13 @@ function SuadaCard({
 
   const handleEditClick = () => {
     if (Status.toLowerCase() === "complete") {
-      navigate(`/dashboard/edit/${id}?mode=view`); // Read-Only Mode
+      navigate(`/dashboard/edit/${id}?mode=view`);
     } else {
       navigate(`/dashboard/edit/${id}?mode=edit`);
     }
   };
 
-  const dispatch = useDispatch();
-
-  const handleChangeStatus = () => {
+  const handleChangeStatus = async () => {
     let newStatus = Status;
     if (Status === "Draft") {
       newStatus = "In Transite";
@@ -38,7 +36,18 @@ function SuadaCard({
       newStatus = "Complete";
     }
 
-    dispatch(updateSuadaStatus({ id, status: newStatus }));
+    try {
+      await axios.put("http://192.168.1.3:5000/updateSuadaStatus", {
+        status: newStatus,
+        id: id,
+      });
+
+      if (onStatusChange) {
+        onStatusChange();
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
   };
 
   return (
