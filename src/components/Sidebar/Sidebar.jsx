@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { SIDEDETAILS, TEQNODUX } from "../../utils/constants";
 import { useNavigate, useLocation } from "react-router-dom";
-
 function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const teqnodux = TEQNODUX;
   const sideDetails = SIDEDETAILS;
@@ -33,12 +32,10 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
     };
   }, [isSidebarOpen, toggleSidebar]);
 
-  const isAdmin = 0;
-
+  const isAdmin = 1;
   const filteredSideDetails = isAdmin
     ? sideDetails
     : sideDetails.filter((item) => item.name === "dashboard");
-  console.log("filteredSideDetails", filteredSideDetails);
 
   return (
     <>

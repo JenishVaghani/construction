@@ -6,13 +6,12 @@ import MultiSelectDropDownField from "../MUIComponents/MultiSelectDropDownField"
 import StealInput from "./StealInput";
 import CementInput from "./CementInput";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import DateField from "../MUIComponents/DateField";
 import { useForm, FormProvider, Controller } from "react-hook-form";
-import { updateSuadaStatus } from "../Redux/UserSlice";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { CEMENTSIZESNAME, STEALSIZESNAME } from "../../utils/constants";
+import Loading from "../Loading/Loading";
 
 function AddSuada() {
   const methods = useForm({
@@ -43,13 +42,13 @@ function AddSuada() {
     formState: { errors },
   } = methods;
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [vendorsData, setVendorsData] = useState([]);
   const [sellersData, setSellersData] = useState([]);
   const [brandsData, setBrandsData] = useState([]);
   const [suadas, setSuadas] = useState([]);
+  const [loading, setLoading] = useState(false);
   const searchParams = new URLSearchParams(location.search);
   const isReadOnly = searchParams.get("mode") === "view";
   const { id } = useParams();
@@ -61,6 +60,7 @@ function AddSuada() {
   // vendor, seller and brand fetch API
   useEffect(() => {
     const fetchDatas = async () => {
+      setLoading(true);
       try {
         const vendorResponse = await axios.get(
           "http://192.168.1.3:5000/getVendors"
@@ -79,6 +79,8 @@ function AddSuada() {
         setBrandsData(brandResponse.data || "");
       } catch (error) {
         console.error("Error fetching vendors:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchDatas();
@@ -107,8 +109,6 @@ function AddSuada() {
 
         sizeIds.forEach((sizeId) => {
           const sizeDetails = suadaToEdit?.sizesData[sizeId];
-          console.log("sizeDetails", sizeDetails);
-
           const vendorRate = sizeDetails.vendorRate || 0;
           const sellerRate = sizeDetails?.sellerRate || 0;
           const qty = sizeDetails?.qty || 0;
@@ -153,6 +153,7 @@ function AddSuada() {
   // suada fetch API
   useEffect(() => {
     try {
+      setLoading(true);
       const fetchSuadas = async () => {
         const response = await axios.get("http://192.168.1.3:5000/getSuadas");
         setSuadas(response.data.Data || "");
@@ -160,6 +161,8 @@ function AddSuada() {
       fetchSuadas();
     } catch (error) {
       console.error("Error fetching suadas:", error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -208,8 +211,6 @@ function AddSuada() {
   const selectedSizes = sizesData.filter((size) =>
     (watch("suadaSizes") || []).includes(size.value)
   );
-  console.log("selectedSizes", selectedSizes);
-
   const [inputData, setInputData] = useState({
     vendorRate: 0,
     sellerRate: 0,
@@ -259,192 +260,187 @@ function AddSuada() {
       totalSellerAmount: inputData.totalSellerRate,
       status: data.status,
     };
-    console.log("storeSuadaData**", storeSuadaData);
-    
+    setLoading(true);
     try {
-      let response;
       if (isEditMode) {
-        response = await axios.put(
-          "http://192.168.1.3:5000/updateSuada",
-          storeSuadaData
-        );
-        console.log("update**response", response);
-        dispatch(updateSuadaStatus({ id, status: data.status }));
+        await axios.put("http://192.168.1.3:5000/updateSuada", storeSuadaData);
       } else {
-        response = await axios.post(
-          "http://192.168.1.3:5000/addSuada",
-          storeSuadaData
-        );
-        console.log("post**response", response);
+        await axios.post("http://192.168.1.3:5000/addSuada", storeSuadaData);
       }
     } catch (error) {
       console.error("Error sending data to server:", error);
+    } finally {
+      setLoading(false);
     }
 
     navigate("/dashboard");
   };
-  console.log("0000", watch("suadaBrandName"));
-  
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="p-4">
-        <div className="w-fit rounded-md bg-gray-300 p-3">
-          <Breadcrumbs separator="›" aria-label="breadcrumb">
-            {addSuadaPath}
-          </Breadcrumbs>
+      {loading ? (
+        <div className="min-h-screen flex justify-center items-center">
+          <Loading />
         </div>
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onsubmit)}>
-            <div className="mt-4">
-              {/* Vendor & Date Row */}
-              <div className="flex-wrap sm:flex md:flex items-start mb-4 gap-3">
-                {/* Vendor Dropdown */}
-                <div className="flex flex-col">
+      ) : (
+        <div className="p-4">
+          <div className="w-fit rounded-md bg-gray-300 p-3">
+            <Breadcrumbs separator="›" aria-label="breadcrumb">
+              {addSuadaPath}
+            </Breadcrumbs>
+          </div>
+          <FormProvider {...methods}>
+            <form onSubmit={handleSubmit(onsubmit)}>
+              <div className="mt-4">
+                {/* Vendor & Date Row */}
+                <div className="flex-wrap sm:flex md:flex items-start mb-4 gap-3">
+                  {/* Vendor Dropdown */}
+                  <div className="flex flex-col">
+                    <DropDownField
+                      options={(vendorsData || []).map((e) => ({
+                        label: e.name,
+                        value: e.id,
+                      }))}
+                      value={watch("suadaVendorName") || ""}
+                      title="Vendor"
+                      {...register("suadaVendorName", {
+                        required: "Vendor is required",
+                      })}
+                      isReadOnly={isReadOnly}
+                      onChange={handleVendorSelect}
+                    />
+                    {errors.suadaVendorName && (
+                      <p className="text-red-500">
+                        {errors.suadaVendorName.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Date Field */}
+                  <div className="flex flex-col mt-4 sm:mt-0 ">
+                    <Controller
+                      name="suadaDate"
+                      control={control}
+                      rules={{ required: "Date is required" }}
+                      render={({ field }) => (
+                        <DateField
+                          label="Date"
+                          isReadOnly={isReadOnly}
+                          date={field.onChange}
+                          value={watch("suadaDate")}
+                        />
+                      )}
+                    />
+                    {errors.suadaDate && (
+                      <p className="text-red-500 mt-1 text-sm">
+                        {errors.suadaDate.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Seller Dropdown */}
+                <div className="mb-4">
                   <DropDownField
-                    options={(vendorsData || []).map((e) => ({
+                    options={(sellersData || []).map((e) => ({
                       label: e.name,
                       value: e.id,
                     }))}
-                    value={watch("suadaVendorName") || ""}
-                    title="Vendor"
-                    {...register("suadaVendorName", {
-                      required: "Vendor is required",
+                    value={watch("suadaSellerName") || ""}
+                    title="Seller"
+                    {...register("suadaSellerName", {
+                      required: "Seller is required",
                     })}
                     isReadOnly={isReadOnly}
-                    onChange={handleVendorSelect}
+                    onChange={handleSellerSelect}
                   />
-                  {errors.suadaVendorName && (
+                  {errors.suadaSellerName && (
                     <p className="text-red-500">
-                      {errors.suadaVendorName.message}
+                      {errors.suadaSellerName.message}
                     </p>
                   )}
                 </div>
 
-                {/* Date Field */}
-                <div className="flex flex-col mt-4 sm:mt-0 ">
-                  <Controller
-                    name="suadaDate"
-                    control={control}
-                    rules={{ required: "Date is required" }}
-                    render={({ field }) => (
-                      <DateField
-                        label="Date"
-                        isReadOnly={isReadOnly}
-                        date={field.onChange}
-                        value={watch("suadaDate")}
-                      />
-                    )}
-                  />
-                  {errors.suadaDate && (
-                    <p className="text-red-500 mt-1 text-sm">
-                      {errors.suadaDate.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Seller Dropdown */}
-              <div className="mb-4">
-                <DropDownField
-                  options={(sellersData || []).map((e) => ({
-                    label: e.name,
-                    value: e.id,
-                  }))}
-                  value={watch("suadaSellerName") || ""}
-                  title="Seller"
-                  {...register("suadaSellerName", {
-                    required: "Seller is required",
-                  })}
-                  isReadOnly={isReadOnly}
-                  onChange={handleSellerSelect}
-                />
-                {errors.suadaSellerName && (
-                  <p className="text-red-500">
-                    {errors.suadaSellerName.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Brand Dropdown */}
-              <div className="mb-4">
-                <DropDownField
-                  options={brandsData.map((e) => ({
-                    label: e.name,
-                    value: e.id,
-                  }))}
-                  value={watch("suadaBrandName") || ""}
-                  title="Brand"
-                  {...register("suadaBrandName", {
-                    required: "Brand is required",
-                  })}
-                  isReadOnly={isReadOnly}
-                  onChange={handleBrandSelect}
-                />
-                {errors.suadaBrandName && (
-                  <p className="text-red-500">
-                    {errors.suadaBrandName.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Size Dropdown */}
-              <div className="mb-4">
-                <MultiSelectDropDownField
-                  options={sizesData}
-                  title="Size"
-                  value={selectedSizes}
-                  {...register("suadaSizes", {
-                    required: "Size is required",
-                  })}
-                  isReadOnly={isReadOnly}
-                  onChange={(e) => setValue("suadaSizes", e)}
-                />
-                {errors.suadaSizes && (
-                  <p className="text-red-500">{errors.suadaSizes.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              {selectedBrand && selectedSizes.length > 0 ? (
-                selectedBrand.category === "Steal" ? (
-                  <StealInput
-                    selectedSizes={selectedSizes}
-                    control={control}
-                    getStealInputData={handleInputDataChange}
+                {/* Brand Dropdown */}
+                <div className="mb-4">
+                  <DropDownField
+                    options={brandsData.map((e) => ({
+                      label: e.name,
+                      value: e.id,
+                    }))}
+                    value={watch("suadaBrandName") || ""}
+                    title="Brand"
+                    {...register("suadaBrandName", {
+                      required: "Brand is required",
+                    })}
                     isReadOnly={isReadOnly}
+                    onChange={handleBrandSelect}
                   />
+                  {errors.suadaBrandName && (
+                    <p className="text-red-500">
+                      {errors.suadaBrandName.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Size Dropdown */}
+                <div className="mb-4">
+                  <MultiSelectDropDownField
+                    options={sizesData}
+                    title="Size"
+                    value={selectedSizes}
+                    {...register("suadaSizes", {
+                      required: "Size is required",
+                    })}
+                    isReadOnly={isReadOnly}
+                    onChange={(e) => setValue("suadaSizes", e)}
+                  />
+                  {errors.suadaSizes && (
+                    <p className="text-red-500">{errors.suadaSizes.message}</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                {selectedBrand && selectedSizes.length > 0 ? (
+                  selectedBrand.category === "Steal" ? (
+                    <StealInput
+                      selectedSizes={selectedSizes}
+                      control={control}
+                      getStealInputData={handleInputDataChange}
+                      isReadOnly={isReadOnly}
+                    />
+                  ) : (
+                    <CementInput
+                      selectedSizes={selectedSizes}
+                      control={control}
+                      getCementInputData={handleInputDataChange}
+                      isReadOnly={isReadOnly}
+                    />
+                  )
                 ) : (
-                  <CementInput
-                    selectedSizes={selectedSizes}
-                    control={control}
-                    getCementInputData={handleInputDataChange}
-                    isReadOnly={isReadOnly}
-                  />
-                )
-              ) : (
-                <h3 className="text-red-500 font-bold">
-                  Please select a brand and size
-                </h3>
-              )}
-            </div>
+                  <h3 className="text-red-500 font-bold">
+                    Please select a brand and size
+                  </h3>
+                )}
+              </div>
 
-            {/* Save Button Centered */}
-            <div className="flex justify-center mt-4">
-              {!isReadOnly && (
-                <button
-                  type="submit"
-                  className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
-                  disabled={isReadOnly}
-                >
-                  {isEditMode ? "Update" : "Save"}
-                </button>
-              )}
-            </div>
-          </form>
-        </FormProvider>
-      </div>
+              {/* Save Button Centered */}
+              <div className="flex justify-center mt-4">
+                {!isReadOnly && (
+                  <button
+                    type="submit"
+                    className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
+                    disabled={isReadOnly}
+                  >
+                    {isEditMode ? "Update" : "Save"}
+                  </button>
+                )}
+              </div>
+            </form>
+          </FormProvider>
+        </div>
+      )}
     </div>
   );
 }

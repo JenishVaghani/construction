@@ -6,6 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import PasswordField from "../MUIComponents/PasswordField";
+import Loading from "../Loading/Loading";
 
 function AddMember() {
   const {
@@ -23,6 +24,7 @@ function AddMember() {
     },
   });
   const [responseMessage, setResponseMessage] = useState();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { userid } = useParams();
   const isEditMode = !!userid;
@@ -45,6 +47,7 @@ function AddMember() {
   useEffect(() => {
     const fetchMember = async () => {
       if (isEditMode) {
+        setLoading(true);
         try {
           // Pela badha members fetch karo
           const response = await axios.get(
@@ -66,6 +69,8 @@ function AddMember() {
           }
         } catch (error) {
           console.error("Error fetching members:", error);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -74,6 +79,7 @@ function AddMember() {
   }, [isEditMode, userid, setValue]);
 
   const onSubmit = async (data) => {
+    setLoading(true);
     const storeMemberData = {
       userid: isEditMode ? userid : uuidv4(),
       type: "member",
@@ -103,115 +109,125 @@ function AddMember() {
       navigate("/members");
     } catch (error) {
       console.error("Error sending data to server", error);
-      
+
       if (error.response && error.response.status === 409) {
         setResponseMessage(error.response.data.Message);
-      } 
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="p-4">
-        <div className="w-fit rounded-md bg-gray-300 p-3">
-          <Breadcrumbs separator="›" aria-label="breadcrumb">
-            {showAddMemberUrl}
-          </Breadcrumbs>
+      {loading ? (
+        <div className="min-h-screen flex justify-center items-center">
+          <Loading />
         </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mt-4">
-            <div className="mb-4">
-              <InputField
-                label="Name"
-                type="text"
-                {...register("memberName", {
-                  required: "Name is  required",
-                  minLength: {
-                    value: 3,
-                    message: "Name must be at least 3 characters long",
-                  },
-                })}
-              />
-              {(errors.memberName || responseMessage) && (
-                <p className="text-red-500">
-                  {errors.memberName?.message || responseMessage}
-                </p>
-              )}
-            </div>
-            <div className="mb-4">
-              <InputField
-                label="Email"
-                type="text"
-                {...register("memberEmail", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^\S+@\S+\.\S+$/,
-                    message: "Plese enter valid email",
-                  },
-                })}
-              />
-              {errors.memberEmail && (
-                <p className="text-red-500">{errors.memberEmail.message}</p>
-              )}
-            </div>
-            <div className="mb-4">
-              <InputField
-                label="Phone No"
-                type="number"
-                {...register("memberPhone", {
-                  required: "Phone is required",
-                  minLength: {
-                    value: 10,
-                    message: "Phone number cannot be less than 10 digits",
-                  },
-                  maxLength: {
-                    value: 10,
-                    message: "Phone number cannot be more than 10 digits",
-                  },
-                })}
-              />
-              {errors.memberPhone && (
-                <p className="text-red-500">{errors.memberPhone.message}</p>
-              )}
-            </div>
-            <div className="mb-4">
-              <Controller
-                name="memberPassword"
-                control={control}
-                defaultValue=""
-                rules={{
-                  required: "Password is required!",
-                  minLength: {
-                    value: 4,
-                    message: "Password must be at least 4 characters!",
-                  },
-                }}
-                render={({ field, fieldState }) => (
-                  <>
-                    <PasswordField
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e); // form ma set karva mate
-                      }}
-                    />
-                    {fieldState.error && (
-                      <p className="text-red-500">{fieldState.error.message}</p>
-                    )}
-                  </>
-                )}
-              />
-            </div>
-            <div className="flex justify-center mb-4">
-              <button
-                type="submit"
-                className="px-12 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
-              >
-                {isEditMode ? "Update" : "Add"}
-              </button>
-            </div>
+      ) : (
+        <div className="p-4">
+          <div className="w-fit rounded-md bg-gray-300 p-3">
+            <Breadcrumbs separator="›" aria-label="breadcrumb">
+              {showAddMemberUrl}
+            </Breadcrumbs>
           </div>
-        </form>
-      </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="mt-4">
+              <div className="mb-4">
+                <InputField
+                  label="Name"
+                  type="text"
+                  {...register("memberName", {
+                    required: "Name is  required",
+                    minLength: {
+                      value: 3,
+                      message: "Name must be at least 3 characters long",
+                    },
+                  })}
+                />
+                {(errors.memberName || responseMessage) && (
+                  <p className="text-red-500">
+                    {errors.memberName?.message || responseMessage}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <InputField
+                  label="Email"
+                  type="text"
+                  {...register("memberEmail", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^\S+@\S+\.\S+$/,
+                      message: "Plese enter valid email",
+                    },
+                  })}
+                />
+                {errors.memberEmail && (
+                  <p className="text-red-500">{errors.memberEmail.message}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <InputField
+                  label="Phone No"
+                  type="number"
+                  {...register("memberPhone", {
+                    required: "Phone is required",
+                    minLength: {
+                      value: 10,
+                      message: "Phone number cannot be less than 10 digits",
+                    },
+                    maxLength: {
+                      value: 10,
+                      message: "Phone number cannot be more than 10 digits",
+                    },
+                  })}
+                />
+                {errors.memberPhone && (
+                  <p className="text-red-500">{errors.memberPhone.message}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <Controller
+                  name="memberPassword"
+                  control={control}
+                  defaultValue=""
+                  rules={{
+                    required: "Password is required!",
+                    minLength: {
+                      value: 4,
+                      message: "Password must be at least 4 characters!",
+                    },
+                  }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <PasswordField
+                        value={field.value}
+                        onChange={(e) => {
+                          field.onChange(e); // form ma set karva mate
+                        }}
+                      />
+                      {fieldState.error && (
+                        <p className="text-red-500">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
+              <div className="flex justify-center mb-4">
+                <button
+                  type="submit"
+                  className="px-12 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
+                >
+                  {isEditMode ? "Update" : "Add"}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

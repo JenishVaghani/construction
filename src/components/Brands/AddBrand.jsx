@@ -12,6 +12,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import Loading from "../Loading/Loading";
 
 function AddBrand() {
   const {
@@ -29,6 +30,7 @@ function AddBrand() {
   });
   const [getBrands, setGetBrands] = useState();
   const [responseMessage, setResponseMessage] = useState();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const brandCategorys = BRANDCATEGORYS;
   const cementSizes = CEMENTSIZESNAME;
@@ -38,12 +40,15 @@ function AddBrand() {
 
   // fetchBrands API
   useEffect(() => {
+    setLoading(true);
     const fetchBrands = async () => {
       try {
         const response = await axios.get("http://192.168.1.3:5000/getBrands");
         setGetBrands(response.data || "");
       } catch (error) {
         console.error("Error fetching brands:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchBrands();
@@ -137,6 +142,7 @@ function AddBrand() {
   };
 
   const onSubmit = async (data) => {
+    setLoading(true);
     // API Data
     const storeBrandData = {
       id: isEditMode ? id : uuidv4(),
@@ -166,74 +172,82 @@ function AddBrand() {
       if (error.response && error.response.status === 409) {
         setResponseMessage(error.response.data.Message);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="p-4">
-        <div className="w-fit rounded-xl bg-gray-300 p-3">
-          <Breadcrumbs separator="›" aria-label="breadcrumb">
-            {showAddBrandUrl}
-          </Breadcrumbs>
+    <div className="min-h-screen bg-gray-100">
+      {loading ? (
+        <div className="min-h-screen flex justify-center items-center">
+          <Loading />
         </div>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mt-4">
-            <div className="mb-4">
-              <InputField
-                label="Name"
-                type="text"
-                {...register("brandName", {
-                  required: "Brand Name is required",
-                })}
-              />
-              {(errors.brandName || responseMessage) && (
-                <p className="text-red-500">
-                  {errors.brandName?.message || responseMessage}
-                </p>
-              )}
-            </div>
-            <div className="mb-4">
-              <DropDownField
-                options={brandCategorys}
-                //me je select ma value set kari 6e te value mathch thavi pade so .value use karu 6e baki value j difference ha se to select work j nathi karvanu......
-                value={watch("brandCategory")?.value || ""}
-                title="Category"
-                {...register("brandCategory", {
-                  required: "Category is required",
-                })}
-                onChange={handleCategorySelect}
-              />
-              {errors.brandCategory && (
-                <p className="text-red-500">{errors.brandCategory.message}</p>
-              )}
-            </div>
-            <div className="mb-4">
-              <MultiSelectDropDownField
-                options={sizes}
-                value={watch("brandSizes") || []}
-                title="Size"
-                {...register("brandSizes", {
-                  required: "At least one size is required",
-                })}
-                onChange={handleSizesSelect}
-              />
-              {errors.brandSizes && (
-                <p className="text-red-500">{errors.brandSizes.message}</p>
-              )}
-            </div>
-            <div className="flex items-center mb-4 pl-12">
-              <button
-                type="submit"
-                className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
-              >
-                {isEditMode ? "Update" : "Add"}
-              </button>
-            </div>
+      ) : (
+        <div className="p-4">
+          <div className="w-fit rounded-xl bg-gray-300 p-3">
+            <Breadcrumbs separator="›" aria-label="breadcrumb">
+              {showAddBrandUrl}
+            </Breadcrumbs>
           </div>
-        </form>
-      </div>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="mt-4">
+              <div className="mb-4">
+                <InputField
+                  label="Name"
+                  type="text"
+                  {...register("brandName", {
+                    required: "Brand Name is required",
+                  })}
+                />
+                {(errors.brandName || responseMessage) && (
+                  <p className="text-red-500">
+                    {errors.brandName?.message || responseMessage}
+                  </p>
+                )}
+              </div>
+              <div className="mb-4">
+                <DropDownField
+                  options={brandCategorys}
+                  //me je select ma value set kari 6e te value mathch thavi pade so .value use karu 6e baki value j difference ha se to select work j nathi karvanu......
+                  value={watch("brandCategory")?.value || ""}
+                  title="Category"
+                  {...register("brandCategory", {
+                    required: "Category is required",
+                  })}
+                  onChange={handleCategorySelect}
+                />
+                {errors.brandCategory && (
+                  <p className="text-red-500">{errors.brandCategory.message}</p>
+                )}
+              </div>
+              <div className="mb-4">
+                <MultiSelectDropDownField
+                  options={sizes}
+                  value={watch("brandSizes") || []}
+                  title="Size"
+                  {...register("brandSizes", {
+                    required: "At least one size is required",
+                  })}
+                  onChange={handleSizesSelect}
+                />
+                {errors.brandSizes && (
+                  <p className="text-red-500">{errors.brandSizes.message}</p>
+                )}
+              </div>
+              <div className="flex items-center mb-4 pl-12">
+                <button
+                  type="submit"
+                  className="px-10 py-2 bg-[#15616D] text-white rounded-xl hover:bg-[#0E4A52] cursor-pointer"
+                >
+                  {isEditMode ? "Update" : "Add"}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

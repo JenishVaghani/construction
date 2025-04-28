@@ -16,6 +16,7 @@ import {
   CEMENTSIZESNAME,
   STEALSIZESNAME,
 } from "../../utils/constants";
+import Loading from "../Loading/Loading";
 
 function TableField({ tableHeadingData, tableData }) {
   let colSpan = tableHeadingData.length + 1;
@@ -30,6 +31,7 @@ function TableField({ tableHeadingData, tableData }) {
   const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState();
+  const [loading, setLoading] = useState(false);
 
   const handleEdit = (item) => {
     if (item.type === "member") {
@@ -50,7 +52,7 @@ function TableField({ tableHeadingData, tableData }) {
 
   const confirmDelete = async () => {
     if (!selectedItem) return;
-
+    setLoading(false);
     try {
       if (selectedItem.type === "member") {
         await axios.delete(
@@ -87,6 +89,7 @@ function TableField({ tableHeadingData, tableData }) {
     } finally {
       setConfirmOpen(false);
       setSelectedItem();
+      setLoading(false);
     }
   };
 
@@ -118,198 +121,207 @@ function TableField({ tableHeadingData, tableData }) {
               ))}
             </TableRow>
           </TableHead>
-          <TableBody className="bg-gray-100">
-            {showTableData.length > 0 ? (
-              showTableData.map((item, index) => (
-                <TableRow
-                  key={index}
-                  className="border border-gray-300 hover:bg-white"
-                >
-                  <TableCell align="center" className="border border-gray-300">
-                    {index + 1}
+          {loading ? (
+            <div className="min-h-screen flex justify-center items-center">
+              <Loading />
+            </div>
+          ) : (
+            <TableBody className="bg-gray-100">
+              {showTableData.length > 0 ? (
+                showTableData.map((item, index) => (
+                  <TableRow
+                    key={index}
+                    className="border border-gray-300 hover:bg-white"
+                  >
+                    <TableCell
+                      align="center"
+                      className="border border-gray-300"
+                    >
+                      {index + 1}
+                    </TableCell>
+                    {item.type === "member" ? (
+                      <>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.name}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.email}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.phone}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
+                            <img
+                              src={edit.img}
+                              alt={edit.name}
+                              className="w-6 h-6 cursor-pointer"
+                              onClick={() => handleEdit(item)}
+                            />
+                            <img
+                              src={deleted.img}
+                              alt={deleted.name}
+                              className="w-6 h-6 cursor-pointer"
+                              onClick={() => handleDeleteClick(item)}
+                            />
+                          </div>
+                        </TableCell>
+                      </>
+                    ) : item.type === "brand" ? (
+                      <>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.name}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {BRANDCATEGORYS.find(
+                            (brand) => brand.value === item.category
+                          )?.label || "Unknown"}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {Array.isArray(item.sizes)
+                            ? item.sizes
+                                .map((sizeValue) => {
+                                  const sizeData =
+                                    item.category ===
+                                    "8b64b5f2-7f1a-4e47-b00a-18ff1126e6fb"
+                                      ? STEALSIZESNAME.find(
+                                          (s) => s.value === sizeValue
+                                        )
+                                      : CEMENTSIZESNAME.find(
+                                          (s) => s.value === sizeValue
+                                        );
+                                  return sizeData ? sizeData.label : "Unknown";
+                                })
+                                .join(", ")
+                            : "No Sizes"}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
+                            <img
+                              src={edit.img}
+                              alt={edit.name}
+                              className="w-6 h-6 cursor-pointer"
+                              onClick={() => handleEdit(item)}
+                            />
+                            <img
+                              src={deleted.img}
+                              alt={deleted.name}
+                              className="w-6 h-6 cursor-pointer"
+                              onClick={() => handleDeleteClick(item)}
+                            />
+                          </div>
+                        </TableCell>
+                      </>
+                    ) : item.type === "vendor" ? (
+                      <>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.name}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.email}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.phone}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
+                            <img
+                              src={edit.img}
+                              alt={edit.name}
+                              className="w-6 h-6 cursor-pointer"
+                              onClick={() => handleEdit(item)}
+                            />
+                            <img
+                              src={deleted.img}
+                              alt={deleted.name}
+                              className="w-6 h-6 cursor-pointer"
+                              onClick={() => handleDeleteClick(item)}
+                            />
+                          </div>
+                        </TableCell>
+                      </>
+                    ) : item.type === "seller" ? (
+                      <>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.name}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.email}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          className="border border-gray-300"
+                        >
+                          {item.phone}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
+                            <img
+                              src={edit.img}
+                              alt={edit.name}
+                              className="w-6 h-6 cursor-pointer"
+                              onClick={() => handleEdit(item)}
+                            />
+                            <img
+                              src={deleted.img}
+                              alt={deleted.name}
+                              className="w-6 h-6 cursor-pointer"
+                              onClick={() => handleDeleteClick(item)}
+                            />
+                          </div>
+                        </TableCell>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={colSpan}
+                    align="center"
+                    className="border border-gray-300 text-red-500 font-bold italic"
+                  >
+                    No data available
                   </TableCell>
-                  {item.type === "member" ? (
-                    <>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.name}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.email}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.phone}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
-                          <img
-                            src={edit.img}
-                            alt={edit.name}
-                            className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleEdit(item)}
-                          />
-                          <img
-                            src={deleted.img}
-                            alt={deleted.name}
-                            className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleDeleteClick(item)}
-                          />
-                        </div>
-                      </TableCell>
-                    </>
-                  ) : item.type === "brand" ? (
-                    <>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.name}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {BRANDCATEGORYS.find(
-                          (brand) => brand.value === item.category
-                        )?.label || "Unknown"}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {Array.isArray(item.sizes)
-                          ? item.sizes
-                              .map((sizeValue) => {
-                                const sizeData =
-                                  item.category ===
-                                  "8b64b5f2-7f1a-4e47-b00a-18ff1126e6fb"
-                                    ? STEALSIZESNAME.find(
-                                        (s) => s.value === sizeValue
-                                      )
-                                    : CEMENTSIZESNAME.find(
-                                        (s) => s.value === sizeValue
-                                      );
-                                return sizeData ? sizeData.label : "Unknown";
-                              })
-                              .join(", ")
-                          : "No Sizes"}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
-                          <img
-                            src={edit.img}
-                            alt={edit.name}
-                            className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleEdit(item)}
-                          />
-                          <img
-                            src={deleted.img}
-                            alt={deleted.name}
-                            className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleDeleteClick(item)}
-                          />
-                        </div>
-                      </TableCell>
-                    </>
-                  ) : item.type === "vendor" ? (
-                    <>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.name}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.email}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.phone}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
-                          <img
-                            src={edit.img}
-                            alt={edit.name}
-                            className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleEdit(item)}
-                          />
-                          <img
-                            src={deleted.img}
-                            alt={deleted.name}
-                            className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleDeleteClick(item)}
-                          />
-                        </div>
-                      </TableCell>
-                    </>
-                  ) : item.type === "seller" ? (
-                    <>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.name}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.email}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        className="border border-gray-300"
-                      >
-                        {item.phone}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center justify-center space-x-6 mr-8 ml-8">
-                          <img
-                            src={edit.img}
-                            alt={edit.name}
-                            className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleEdit(item)}
-                          />
-                          <img
-                            src={deleted.img}
-                            alt={deleted.name}
-                            className="w-6 h-6 cursor-pointer"
-                            onClick={() => handleDeleteClick(item)}
-                          />
-                        </div>
-                      </TableCell>
-                    </>
-                  ) : (
-                    <></>
-                  )}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={colSpan}
-                  align="center"
-                  className="border border-gray-300 text-red-500 font-bold italic"
-                >
-                  No data available
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              )}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
 
