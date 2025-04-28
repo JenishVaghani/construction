@@ -12,6 +12,7 @@ import Filter from "./images/filter.png";
 import Download from "./images/download.png";
 import Image404 from "./images/404.png";
 import Construction from "./images/construction.png";
+import Logout from "./images/Logout.png"
 
 export const TEQNODUX = { img: Teqnodux, name: "teqnodux" };
 export const EDIT = { img: Edit, name: "edit" };
@@ -22,6 +23,7 @@ export const FILTER = { img: Filter, name: "Filter" };
 export const DOWNLOAD = { img: Download, name: "Download" };
 export const IMAGE404 = { img: Image404, name: "Image404" };
 export const CONSTRUCTION = { img: Construction, name: "Construction" };
+export const LOGOUT = {img: Logout, name: "Logout"}
 
 export const SIDEDETAILS = [
   { img: Dashboard, name: "dashboard", title: "Dashboard" },

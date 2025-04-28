@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  isAdmin: [],
 };
 
 export const userSlice = createSlice({
@@ -9,11 +8,8 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     // ADD operations
-    addIsAdmin(state, action) {
-      state.isAdmin.push(action.payload);
-    },
+   
   },
 });
 
-export const { addIsAdmin } = userSlice.actions;
 export default userSlice.reducer;

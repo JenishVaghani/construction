@@ -22,12 +22,13 @@ function SuadaCard({
   const show = SHOW;
   const [loading, setLoading] = useState(false);
 
-  const isAdmin = 0;
+  const isAdmin = localStorage.getItem("isAdminStatus");
+  console.log("isAdmin00", isAdmin);
+
   const filterIsAdmin = isAdmin;
-  console.log("filterIsAdmin", filterIsAdmin ? "T" : "F");
 
   const handleEditClick = () => {
-    if (filterIsAdmin) {
+    if (filterIsAdmin === "1") {
       if (Status === "Complete") {
         navigate(`/dashboard/edit/${id}?mode=view`);
       } else {
@@ -78,7 +79,7 @@ function SuadaCard({
           <div className="absolute -top-5 right-2 bg-gray-300 hover:bg-[#C8C8C8] p-2 rounded-full shadow-md cursor-pointer ">
             <img
               src={
-                filterIsAdmin
+                filterIsAdmin === "1"
                   ? Status === "Complete"
                     ? show.img
                     : edit.img
@@ -138,10 +139,10 @@ function SuadaCard({
             <button
               type="submit"
               onClick={handleChangeStatus}
-              disabled={!filterIsAdmin}
+              disabled={filterIsAdmin === "0"}
               className={`w-full text-white py-2 rounded-md shadow-md font-medium 
             ${
-              filterIsAdmin
+              filterIsAdmin === "1"
                 ? Status === "Draft"
                   ? "bg-yellow-500 hover:bg-yellow-600 cursor-pointer"
                   : Status === "In Transite"

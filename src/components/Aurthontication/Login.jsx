@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { TEQNODUX, CONSTRUCTION } from "../../utils/constants";
-import { addIsAdmin } from "../Redux/UserSlice";
-import { useDispatch } from "react-redux";
 import Loading from "../Loading/Loading";
 
 export default function Login() {
@@ -24,7 +22,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const teqnodux = TEQNODUX;
   const construction = CONSTRUCTION;
-  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -40,8 +37,9 @@ export default function Login() {
         storeUserData
       );
 
-      const isAdminData = response.data.data.isAdmin;
-      dispatch(addIsAdmin(isAdminData));
+      const isAdminData = response.data.Data.isAdmin;
+      localStorage.setItem("isAdminStatus", isAdminData);
+
       if (response.status === 200) {
         localStorage.setItem("user", watch("username"));
         navigate("/dashboard");
