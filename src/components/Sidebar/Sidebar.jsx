@@ -34,7 +34,6 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
   }, [isSidebarOpen, toggleSidebar]);
 
   const isAdmin = localStorage.getItem("isAdminStatus");
-  console.log("isAdmin", isAdmin);
   
   const filteredSideDetails =
     isAdmin === "1"

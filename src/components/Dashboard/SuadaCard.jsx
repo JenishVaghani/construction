@@ -23,8 +23,6 @@ function SuadaCard({
   const [loading, setLoading] = useState(false);
 
   const isAdmin = localStorage.getItem("isAdminStatus");
-  console.log("isAdmin00", isAdmin);
-
   const filterIsAdmin = isAdmin;
 
   const handleEditClick = () => {

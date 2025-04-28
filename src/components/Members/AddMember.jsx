@@ -63,9 +63,7 @@ function AddMember() {
               setValue("memberEmail", member.email);
               setValue("memberPhone", member.phone);
               setValue("memberPassword", member.password);
-            } else {
-              console.log("Member not found for userid:", userid);
-            }
+            } 
           }
         } catch (error) {
           console.error("Error fetching members:", error);
